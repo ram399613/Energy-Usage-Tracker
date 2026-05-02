@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energy Tracker - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <header class="dashboard-header">
+    <h1>⚡ Energy Tracker</h1>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <span id="welcomeMessage">Welcome</span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <div id="thresholdAlert" class="alert" style="grid-column: 1 / -1;">
+      ⚠️ High Energy Usage Alert! You have exceeded your daily threshold of 10 kWh.
+    </div>
+
+    <div class="stats-grid" style="grid-column: 1 / -1;">
+      <div class="stat-box">
+        <h3>Total Energy (Last 30 Days)</h3>
+        <div class="value"><span id="totalUnits">0</span> kWh</div>
+      </div>
+      <div class="stat-box">
+        <h3>Estimated Cost</h3>
+        <div class="value">$<span id="totalCost">0.00</span></div>
+      </div>
+    </div>
+
+    <div class="card chart-container">
+      <h3>Real-Time Energy Consumption</h3>
+      <canvas id="energyChart"></canvas>
+    </div>
+
+    <div class="card simulate-section">
+      <div>
+        <h3>Simulate IoT Data</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Click the button to simulate a real-time IoT device sending energy usage data.</p>
+      </div>
+      <button id="simulateBtn" class="btn">Send Manual Data (0.5 - 2 kWh)</button>
+    </div>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
