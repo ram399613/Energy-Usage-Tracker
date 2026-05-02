@@ -152,4 +152,43 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     } catch (error) {}
   }, 30000);
+
+  // AI Insights Fetching
+  document.getElementById('aiBtn').addEventListener('click', async () => {
+    const loading = document.getElementById('aiLoading');
+    const results = document.getElementById('aiResults');
+    
+    loading.style.display = 'block';
+    results.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/energy/ai-insights', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      
+      loading.style.display = 'none';
+
+      if (res.ok) {
+        document.getElementById('aiPredictedCost').textContent = data.predictedCost;
+        document.getElementById('aiPeakTime').textContent = data.peakTime;
+        
+        const tipsUl = document.getElementById('aiTips');
+        tipsUl.innerHTML = '';
+        data.tips.forEach(tip => {
+          const li = document.createElement('li');
+          li.textContent = tip;
+          li.style.marginBottom = '0.5rem';
+          tipsUl.appendChild(li);
+        });
+
+        results.style.display = 'block';
+      } else {
+        alert(data.message || 'Error fetching AI insights');
+      }
+    } catch (error) {
+      loading.style.display = 'none';
+      alert('Network error while generating AI insights');
+    }
+  });
 });
