@@ -2,7 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check if already logged in
   const token = localStorage.getItem('token');
   if (token) {
-    window.location.href = '/index.html';
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.isAdmin) {
+      window.location.href = '/admin.html';
+    } else {
+      window.location.href = '/index.html';
+    }
   }
 
   const loginCard = document.getElementById('loginCard');
@@ -55,7 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data));
-        window.location.href = '/index.html';
+        if (data.isAdmin) {
+          window.location.href = '/admin.html';
+        } else {
+          window.location.href = '/index.html';
+        }
       } else {
         showAlert(loginAlert, data.message || 'Login failed');
       }
@@ -83,7 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data));
-        window.location.href = '/index.html';
+        if (data.isAdmin) {
+          window.location.href = '/admin.html';
+        } else {
+          window.location.href = '/index.html';
+        }
       } else {
         showAlert(signupAlert, data.message || 'Signup failed');
       }

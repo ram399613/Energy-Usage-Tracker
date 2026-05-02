@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, '../client')));
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/energy', require('./routes/energyRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Socket.io for real-time updates
 io.on('connection', (socket) => {

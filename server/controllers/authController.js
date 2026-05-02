@@ -34,6 +34,7 @@ const registerUser = async (req, res, next) => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        isAdmin: user.isAdmin,
         token: generateToken(user._id),
       });
     } else {
@@ -56,6 +57,7 @@ const loginUser = async (req, res, next) => {
         _id: user.id,
         name: user.name,
         email: user.email,
+        isAdmin: user.isAdmin,
         token: generateToken(user._id),
       });
     } else {
@@ -72,7 +74,8 @@ const getUserProfile = async (req, res, next) => {
     res.json({
       id: req.user.id,
       name: req.user.name,
-      email: req.user.email
+      email: req.user.email,
+      isAdmin: req.user.isAdmin
     });
   } catch (error) {
     next(error);
