@@ -111,6 +111,64 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   fetchData();
 
+  // AI Insights Fetching Function
+  const fetchAiInsights = async (showLoading = true) => {
+    const loading = document.getElementById('aiLoading');
+    const results = document.getElementById('aiResults');
+    
+    if (showLoading) {
+      loading.style.display = 'block';
+      results.style.display = 'none';
+    }
+
+    try {
+      const res = await fetch('/api/energy/ai-insights', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      
+      loading.style.display = 'none';
+
+      if (res.ok) {
+        document.getElementById('aiWeather').textContent = data.context.weather;
+        document.getElementById('aiGrid').textContent = data.context.gridStatus;
+        document.getElementById('aiRate').textContent = data.context.currentRate;
+
+        document.getElementById('aiPredictedCost').textContent = data.predictions.predictedCost;
+        document.getElementById('aiPredictedUnits').textContent = data.predictions.predictedUnits;
+        document.getElementById('aiPeakTime').textContent = data.predictions.peakTime;
+
+        const anomalyAlert = document.getElementById('anomalyAlert');
+        if (data.anomaliesFound > 0) {
+          document.getElementById('anomalyCount').textContent = data.anomaliesFound;
+          anomalyAlert.style.display = 'block';
+        } else {
+          anomalyAlert.style.display = 'none';
+        }
+
+        const tipsUl = document.getElementById('aiTips');
+        tipsUl.innerHTML = '';
+        data.recommendations.forEach(tip => {
+          const li = document.createElement('li');
+          li.textContent = tip.message;
+          if (tip.priority === 'High') li.style.color = '#ef4444';
+          else if (tip.priority === 'Medium') li.style.color = '#fbbf24';
+          li.style.marginBottom = '0.5rem';
+          tipsUl.appendChild(li);
+        });
+
+        results.style.display = 'block';
+      }
+    } catch (error) {
+      if (showLoading) {
+        loading.style.display = 'none';
+        alert('Error generating AI insights');
+      }
+    }
+  };
+
+  document.getElementById('aiBtn').addEventListener('click', () => fetchAiInsights(true));
+
   // Socket.io Setup
   const socket = io();
   socket.on('connect', () => {
@@ -118,7 +176,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   socket.on('newEnergyData', (newData) => {
-    fetchData(); // Simplest way to recalculate totals and refresh chart
+    fetchData(); 
+    // Real-time AI update: if results are already visible, refresh them silently
+    if (document.getElementById('aiResults').style.display === 'block') {
+      fetchAiInsights(false);
+    }
   });
 
   // Simulate IoT Data
@@ -153,66 +215,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {}
   }, 30000);
 
-  // AI Insights Fetching
-  document.getElementById('aiBtn').addEventListener('click', async () => {
-    const loading = document.getElementById('aiLoading');
-    const results = document.getElementById('aiResults');
-    
-    loading.style.display = 'block';
-    results.style.display = 'none';
-
-    try {
-      const res = await fetch('/api/energy/ai-insights', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      
-      loading.style.display = 'none';
-
-      if (res.ok) {
-        // Map Context
-        document.getElementById('aiWeather').textContent = data.context.weather;
-        document.getElementById('aiGrid').textContent = data.context.gridStatus;
-        document.getElementById('aiRate').textContent = data.context.currentRate;
-
-        // Map Predictions
-        document.getElementById('aiPredictedCost').textContent = data.predictions.predictedCost;
-        document.getElementById('aiPredictedUnits').textContent = data.predictions.predictedUnits;
-        document.getElementById('aiPeakTime').textContent = data.predictions.peakTime;
-
-        // Anomaly Handling
-        const anomalyAlert = document.getElementById('anomalyAlert');
-        if (data.anomaliesFound > 0) {
-          document.getElementById('anomalyCount').textContent = data.anomaliesFound;
-          anomalyAlert.style.display = 'block';
-        } else {
-          anomalyAlert.style.display = 'none';
-        }
-
-        // Map Recommendations
-        const tipsUl = document.getElementById('aiTips');
-        tipsUl.innerHTML = '';
-        data.recommendations.forEach(tip => {
-          const li = document.createElement('li');
-          li.textContent = tip.message;
-          // Add some dynamic color coding based on priority
-          if (tip.priority === 'High') {
-            li.style.color = '#ef4444'; // Red
-          } else if (tip.priority === 'Medium') {
-            li.style.color = '#fbbf24'; // Yellow
-          }
-          li.style.marginBottom = '0.5rem';
-          tipsUl.appendChild(li);
-        });
-
-        results.style.display = 'block';
-      } else {
-        alert(data.message || 'Error fetching AI insights');
-      }
-    } catch (error) {
-      loading.style.display = 'none';
-      alert('Network error while generating AI insights');
-    }
   // Reset Graph Data
   document.getElementById('resetGraphBtn').addEventListener('click', async () => {
     if (confirm('Are you sure you want to reset all energy data? This cannot be undone.')) {
@@ -222,7 +224,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
-          // Clear chart and local stats
           energyChart.data.labels = [];
           energyChart.data.datasets[0].data = [];
           energyChart.update();
