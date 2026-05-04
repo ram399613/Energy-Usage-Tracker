@@ -1,81 +1,155 @@
 # ⚡ Energy Usage Tracker
 
-A complete full-stack real-time Energy Usage Tracker web application. 
+An AI-powered real-time energy monitoring web application that simulates IoT device data, analyzes consumption patterns, predicts future usage costs, and provides smart energy-saving recommendations — all in one interactive dashboard.
 
-## 🔹 Features
-- User authentication (Signup/Login using JWT)
-- Dashboard to track energy consumption (kWh)
-- Real-time updates via WebSockets
-- Show monthly energy usage data and calculate estimated electricity cost
-- Real-time chart visualization with Chart.js
-- High usage alerts
-- Fully responsive modern UI
-- **Advanced AI Working Model (Anti-Gravity Core)** with predictive intelligence, contextual analysis, and anomaly detection
+🌐 **Live Demo:** [energy-usage-tracker.onrender.com](https://energy-usage-tracker.onrender.com/index.html)
 
-## 🚀 Advanced AI Working Model (Anti-Gravity Core)
-This project features a self-learning, intelligent energy management system that monitors, predicts, and optimizes energy usage.
+---
 
-### 🧠 Core Capabilities
-- **Multi-Source Data & Context-Aware API**: Integrates real-time contextual variables, such as simulated weather conditions (`Sunny`, `Heatwave`) and dynamic time-of-day electricity pricing to build intelligent surrounding data.
-- **AI Analytics Engine**: Applies statistical modeling and pattern recognition to identify hidden high-energy anomalies (`usage > mean + 1.5 * standard deviation`) and peak consumption behavioral trends.
-- **Predictive Intelligence Layer**: Utilizes time-series logic based on recent user inputs, augmented by dynamic weather modifiers, to precisely forecast future monthly energy consumption and expected costs.
-- **Optimization & Recommendation Engine**: Generates personalized, prioritized recommendations (`High`, `Medium`, `Low`). Actionable insights shift dynamically based on anomalies detected, active peak grid hours, and real-time environment metrics.
-- **Lightweight Integration**: Built over existing historical MongoDB data as a seamless plug-and-play enhancement, meaning absolutely zero changes were required to database collections or deployment structures.
+## 📸 Preview
 
-### ⚙️ How It Works
-1. **Trigger Engine:** Clicking **"Generate AI Insights"** on the dashboard awakens the AI controller to fetch the user's historical `Energy` logs.
-2. **Context Mapping:** The AI calculates a statistical baseline and maps the current real-world conditions (hour of day, grid demand, pricing, weather factors) onto the user's baseline.
-3. **Forecasting:** Using time-series averages and intelligent modifiers, it projects the upcoming usage trajectory.
-4. **Adaptive Feedback:** The engine identifies inefficiencies, ranks actionable optimization tips, and delivers the aggregated intelligence back to the UI.
-5. **Anti-Gravity UI:** Insights are rendered using a futuristic, glowing "floating" visualization system to deliver a premium user experience.
+> Dashboard with real-time energy graph, AI insights panel, and IoT data simulation.
 
-## 🔹 Tech Stack
-**Frontend:**
-- HTML5, CSS3, Vanilla JavaScript
-- Chart.js for data visualization
+---
 
-**Backend:**
-- Node.js & Express.js
-- Socket.io for WebSockets
-- MVC architecture
+## ✨ Features
 
-**Database:**
-- MongoDB & Mongoose
+### 📊 Real-Time Dashboard
+- Displays **Total Energy Used** over the last 30 days (in kWh)
+- Shows **Estimated Electricity Cost** in real time
+- Visual **energy consumption graph** that updates live as IoT data is received
+- ⚠️ **High Usage Alert** when daily consumption exceeds the set threshold (10 kWh)
 
-## 🔹 Installation Steps
-1. Clone the repository
-2. Navigate to the project directory
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Configure environment variables (see below)
-5. Start the server:
-   ```bash
-   npm run dev
-   ```
-6. Open your browser and go to `http://localhost:5000`
+### 🔌 IoT Data Simulation
+- **Simulate IoT Device** button sends random energy readings (0.5 – 2 kWh) to the dashboard
+- Mimics real-world smart meter or IoT sensor behavior
+- Graph updates instantly on each simulated data point
+- **Reset Graph** option to clear all session data
 
-## 🔹 Environment Variables Setup
-Create a `.env` file in the root directory and add the following:
+### 🤖 AI Energy Analysis & Predictions
+- **AI Insights Generator** — Click to get live analysis of your energy patterns
+- Powered by Claude AI for intelligent recommendations
+- Features include:
+  - 🌍 **Real-Time Context** — Weather, grid status, and current electricity rate
+  - 🚀 **AI Predictions** — Next month cost, projected usage, and peak consumption time
+  - ⚠️ **Anomaly Detection** — Flags unusually high energy spikes automatically
+  - 🧠 **Adaptive AI Recommendations** — Personalized tips to reduce energy waste
+
+### 🔐 User Authentication
+- Login/Logout functionality to keep the experience personal and secure
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | HTML5, CSS3, JavaScript |
+| AI Integration | Claude AI (Anthropic API) |
+| Hosting | Render |
+| Data Simulation | JavaScript-based IoT mock |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- A modern web browser (Chrome, Firefox, Edge, Safari)
+- Node.js (if running locally with a backend)
+- Anthropic API Key (for AI features)
+
+### Run Locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/ram399613/Energy-Usage-Tracker.git
+
+# 2. Navigate into the project folder
+cd Energy-Usage-Tracker
+
+# 3. Open index.html in your browser
+# (or use a local server for best results)
+npx serve .
 ```
-NODE_ENV=development
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+
+> **Note:** For AI features to work locally, make sure your Anthropic API key is configured in the project.
+
+---
+
+## 📂 Project Structure
+
+```
+Energy-Usage-Tracker/
+│
+├── index.html          # Main dashboard page
+├── login.html          # User login page
+├── style.css           # Stylesheet
+├── script.js           # Core logic: IoT simulation, graph updates, AI calls
+└── README.md           # Project documentation
 ```
 
-## 🔹 Deployment (Render)
-1. Push your code to GitHub
-2. Create a new Web Service on Render
-3. Connect your GitHub repository
-4. Use the following settings:
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-5. Add the Environment Variables (`MONGO_URI`, `JWT_SECRET`) in Render's dashboard.
-Alternatively, use the provided `render.yaml` file to deploy using Render's Blueprint.
+---
 
-## 🔹 Author
-- **Name:** Ramu Reddy
-- **GitHub:** [ram399613](https://github.com/ram399613)
-- **Email:** ramureddy399@gmail.com
+## 🔮 How It Works
+
+```
+User Opens Dashboard
+        │
+        ▼
+┌──────────────────┐      ┌───────────────────────┐
+│  IoT Simulation  │─────▶│  Energy Graph Updates  │
+│  (0.5 – 2 kWh)  │      │  + kWh / Cost Counter  │
+└──────────────────┘      └───────────────────────┘
+                                    │
+                                    ▼
+                        ┌────────────────────────┐
+                        │   AI Analysis Trigger   │
+                        │   (Claude Anthropic)    │
+                        └────────────────────────┘
+                                    │
+                    ┌───────────────┼────────────────┐
+                    ▼               ▼                 ▼
+             Predictions      Anomaly           Recommendations
+           (Cost / Usage)    Detection          (Energy Tips)
+```
+
+---
+
+## 💡 Use Cases
+
+- 🏠 **Homeowners** — Understand and reduce electricity bills
+- 🏢 **Office Managers** — Monitor workplace energy consumption
+- 🎓 **Students & Developers** — Learn AI integration with IoT concepts
+- 🌱 **Sustainability Enthusiasts** — Track carbon footprint and optimize usage
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get involved:
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit: `git commit -m "Add your feature"`
+4. Push to your branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Author
+
+**Ram** — [@ram399613](https://github.com/ram399613)
+
+---
+
+## 🌟 Support
+
+If you found this project helpful, consider giving it a ⭐ on GitHub!
+
+> _"The best energy is the energy you don't waste."_
