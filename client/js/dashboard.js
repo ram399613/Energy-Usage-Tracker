@@ -170,14 +170,37 @@ document.addEventListener('DOMContentLoaded', async () => {
       loading.style.display = 'none';
 
       if (res.ok) {
-        document.getElementById('aiPredictedCost').textContent = data.predictedCost;
-        document.getElementById('aiPeakTime').textContent = data.peakTime;
-        
+        // Map Context
+        document.getElementById('aiWeather').textContent = data.context.weather;
+        document.getElementById('aiGrid').textContent = data.context.gridStatus;
+        document.getElementById('aiRate').textContent = data.context.currentRate;
+
+        // Map Predictions
+        document.getElementById('aiPredictedCost').textContent = data.predictions.predictedCost;
+        document.getElementById('aiPredictedUnits').textContent = data.predictions.predictedUnits;
+        document.getElementById('aiPeakTime').textContent = data.predictions.peakTime;
+
+        // Anomaly Handling
+        const anomalyAlert = document.getElementById('anomalyAlert');
+        if (data.anomaliesFound > 0) {
+          document.getElementById('anomalyCount').textContent = data.anomaliesFound;
+          anomalyAlert.style.display = 'block';
+        } else {
+          anomalyAlert.style.display = 'none';
+        }
+
+        // Map Recommendations
         const tipsUl = document.getElementById('aiTips');
         tipsUl.innerHTML = '';
-        data.tips.forEach(tip => {
+        data.recommendations.forEach(tip => {
           const li = document.createElement('li');
-          li.textContent = tip;
+          li.textContent = tip.message;
+          // Add some dynamic color coding based on priority
+          if (tip.priority === 'High') {
+            li.style.color = '#ef4444'; // Red
+          } else if (tip.priority === 'Medium') {
+            li.style.color = '#fbbf24'; // Yellow
+          }
           li.style.marginBottom = '0.5rem';
           tipsUl.appendChild(li);
         });

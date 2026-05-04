@@ -10,6 +10,24 @@ A complete full-stack real-time Energy Usage Tracker web application.
 - Real-time chart visualization with Chart.js
 - High usage alerts
 - Fully responsive modern UI
+- **Advanced AI Working Model (Anti-Gravity Core)** with predictive intelligence, contextual analysis, and anomaly detection
+
+## 🚀 Advanced AI Working Model (Anti-Gravity Core)
+This project features a self-learning, intelligent energy management system that monitors, predicts, and optimizes energy usage.
+
+### 🧠 Core Capabilities
+- **Multi-Source Data & Context-Aware API**: Integrates real-time contextual variables, such as simulated weather conditions (`Sunny`, `Heatwave`) and dynamic time-of-day electricity pricing to build intelligent surrounding data.
+- **AI Analytics Engine**: Applies statistical modeling and pattern recognition to identify hidden high-energy anomalies (`usage > mean + 1.5 * standard deviation`) and peak consumption behavioral trends.
+- **Predictive Intelligence Layer**: Utilizes time-series logic based on recent user inputs, augmented by dynamic weather modifiers, to precisely forecast future monthly energy consumption and expected costs.
+- **Optimization & Recommendation Engine**: Generates personalized, prioritized recommendations (`High`, `Medium`, `Low`). Actionable insights shift dynamically based on anomalies detected, active peak grid hours, and real-time environment metrics.
+- **Lightweight Integration**: Built over existing historical MongoDB data as a seamless plug-and-play enhancement, meaning absolutely zero changes were required to database collections or deployment structures.
+
+### ⚙️ How It Works
+1. **Trigger Engine:** Clicking **"Generate AI Insights"** on the dashboard awakens the AI controller to fetch the user's historical `Energy` logs.
+2. **Context Mapping:** The AI calculates a statistical baseline and maps the current real-world conditions (hour of day, grid demand, pricing, weather factors) onto the user's baseline.
+3. **Forecasting:** Using time-series averages and intelligent modifiers, it projects the upcoming usage trajectory.
+4. **Adaptive Feedback:** The engine identifies inefficiencies, ranks actionable optimization tips, and delivers the aggregated intelligence back to the UI.
+5. **Anti-Gravity UI:** Insights are rendered using a futuristic, glowing "floating" visualization system to deliver a premium user experience.
 
 ## 🔹 Tech Stack
 **Frontend:**
