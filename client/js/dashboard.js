@@ -213,5 +213,27 @@ document.addEventListener('DOMContentLoaded', async () => {
       loading.style.display = 'none';
       alert('Network error while generating AI insights');
     }
+  // Reset Graph Data
+  document.getElementById('resetGraphBtn').addEventListener('click', async () => {
+    if (confirm('Are you sure you want to reset all energy data? This cannot be undone.')) {
+      try {
+        const res = await fetch('/api/energy/reset', {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          // Clear chart and local stats
+          energyChart.data.labels = [];
+          energyChart.data.datasets[0].data = [];
+          energyChart.update();
+          document.getElementById('totalUnits').textContent = '0.00';
+          document.getElementById('totalCost').textContent = '0.00';
+          document.getElementById('aiResults').style.display = 'none';
+          alert('Energy data has been reset.');
+        }
+      } catch (error) {
+        console.error('Reset error:', error);
+      }
+    }
   });
 });

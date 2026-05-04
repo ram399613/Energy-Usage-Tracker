@@ -158,8 +158,18 @@ const getAiInsights = async (req, res, next) => {
   }
 };
 
+const resetEnergyData = async (req, res, next) => {
+  try {
+    await Energy.deleteMany({ userId: req.user.id });
+    res.json({ message: 'Energy data reset successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addEnergyData,
   getEnergyData,
-  getAiInsights
+  getAiInsights,
+  resetEnergyData
 };

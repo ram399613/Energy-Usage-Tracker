@@ -44,7 +44,10 @@
         <h3>Simulate IoT Data</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Click the button to simulate a real-time IoT device sending energy usage data.</p>
       </div>
-      <button id="simulateBtn" class="btn">Send Manual Data (0.5 - 2 kWh)</button>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end;">
+        <button id="simulateBtn" class="btn" style="margin-top: 0;">Send Manual Data (0.5 - 2 kWh)</button>
+        <button id="resetGraphBtn" class="btn" style="margin-top: 0; background: var(--danger-color);">Reset Graph Data</button>
+      </div>
     </div>
 
     <div class="card ai-card" style="grid-column: 1 / -1; background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid #334155;">
@@ -64,7 +67,7 @@
             <p><strong>Current Rate:</strong> <span id="aiRate">N/A</span></p>
           </div>
           <div style="background: #0f172a; padding: 1rem; border-radius: 0.5rem;">
-            <h4 style="color: #94a3b8; margin-bottom: 0.5rem; font-size: 0.9rem;">🚀 Anti-Gravity Predictions</h4>
+            <h4 style="color: #94a3b8; margin-bottom: 0.5rem; font-size: 0.9rem;">🚀 AI Predictions</h4>
             <p><strong>Next Month Cost:</strong> $<span id="aiPredictedCost">0.00</span></p>
             <p><strong>Projected Usage:</strong> <span id="aiPredictedUnits">0</span> kWh</p>
             <p><strong>Peak Time:</strong> <span id="aiPeakTime">N/A</span></p>
