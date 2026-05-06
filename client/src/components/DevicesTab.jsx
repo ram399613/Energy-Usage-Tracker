@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Wind, Refrigerator, WashingMachine, Bath, Plus, Power, Settings2, Info } from 'lucide-react';
+import { Wind, Box, Waves, Droplets, Plus, Power, Settings2, Info } from 'lucide-react';
 import { cn } from '../services/utils';
 
 const DeviceItem = ({ icon: Icon, name, room, usage, status, health }) => (
@@ -55,9 +55,9 @@ const DeviceItem = ({ icon: Icon, name, room, usage, status, health }) => (
 const DevicesTab = () => {
   const devices = [
     { icon: Wind, name: 'Main AC', room: 'Living Room', usage: '12.4', status: 'on', health: 98 },
-    { icon: Refrigerator, name: 'Family Fridge', room: 'Kitchen', usage: '4.2', status: 'on', health: 95 },
-    { icon: WashingMachine, name: 'Front Load Washer', room: 'Laundry', usage: '2.8', status: 'off', health: 89 },
-    { icon: Bath, name: 'Smart Heater', room: 'Bathroom', usage: '8.1', status: 'off', health: 92 },
+    { icon: Box, name: 'Family Fridge', room: 'Kitchen', usage: '4.2', status: 'on', health: 95 },
+    { icon: Waves, name: 'Front Load Washer', room: 'Laundry', usage: '2.8', status: 'off', health: 89 },
+    { icon: Droplets, name: 'Smart Heater', room: 'Bathroom', usage: '8.1', status: 'off', health: 92 },
   ];
 
   return (
