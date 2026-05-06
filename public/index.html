@@ -54,7 +54,10 @@
                             </div>
                         </div>
                         <h3 id="total-consumed">0.00 kW</h3>
-                        <p class="text-blue"><span class="pulse-dot"></span> Grid Synchronized</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                            <p class="text-blue" style="font-size: 12px;"><span class="pulse-dot"></span> Grid Sync</p>
+                            <p style="font-size: 11px; opacity: 0.6;">CO₂: <span id="ana-carbon">0.00 kg</span></p>
+                        </div>
                     </div>
                     <div class="metric-card">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -64,7 +67,10 @@
                             </div>
                         </div>
                         <h3 id="eco-score">75.6%</h3>
-                        <p class="text-green">☀️ Optimal Efficiency</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                            <p class="text-green" style="font-size: 12px;">☀️ Optimal</p>
+                            <p style="font-size: 11px; opacity: 0.6;">Daily: <span id="ana-daily">0.0 kW</span></p>
+                        </div>
                     </div>
                     <div class="metric-card">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -74,7 +80,10 @@
                             </div>
                         </div>
                         <h3 id="est-bill">₹0</h3>
-                        <p style="color: var(--accent-red);">Projected total</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                            <p style="color: var(--accent-red); font-size: 12px;">Projected</p>
+                            <p style="font-size: 11px; opacity: 0.6;">Weekly: <span id="ana-bill">₹0</span></p>
+                        </div>
                     </div>
                 </div>
 

@@ -15,7 +15,10 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
 body {
-  background: radial-gradient(circle at top right, #1e1b4b, #030712);
+  background: 
+    radial-gradient(circle at top right, rgba(30, 27, 75, 0.4), rgba(3, 7, 18, 0.95)),
+    url('../images/ai-bg.png') no-repeat center center fixed;
+  background-size: cover;
   color: var(--text-main);
   overflow-x: hidden;
   min-height: 100vh;
@@ -81,8 +84,8 @@ body {
 
 .source-config {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 28px;
   padding: 35px;
   margin-bottom: 40px;
@@ -112,11 +115,10 @@ body {
 
 .metric-card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid var(--glass-border);
   border-radius: 28px;
   padding: 35px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
@@ -160,10 +162,10 @@ body {
   border-radius: 28px;
   padding: 24px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 20px rgba(0, 242, 255, 0.05);
-  z-index: 500;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s ease;
   transform-origin: bottom right;
 }
 
@@ -191,7 +193,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: pulse-glow 3s infinite;
 }
 
