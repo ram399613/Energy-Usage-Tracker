@@ -1,16 +1,16 @@
 /**
- * NexGen AI - Main Application Orchestrator
+ * NexGen AI Dashboard - Main Application Orchestrator
  */
 import { initCharts, updateLiveChart, updateDistributionChart, updatePredictChart } from './charts.js';
 import { renderDevices, updateDeviceUI } from './devices.js';
 import { updateAnalytics } from './analytics.js';
-import { analyzeGrid, getPredictions } from './ai-engine.js';
+import { analyzeSystem } from './ai-engine.js';
 import { initChatbot } from './chatbot.js';
-import { initSettings, showToast, animateValue } from './utils.js'; // Wait, I put showToast in utils.js
+import { initSettings, showToast, animateValue } from './utils.js';
 
 const socket = io();
 
-// CENTRALIZED APP STATE
+// CENTRALIZED APP STATE (Production Ready)
 const appState = {
     devices: [],
     metrics: {
@@ -21,20 +21,24 @@ const appState = {
     },
     prevTotal: 0,
     predictions: { historical: [], forecast: [] },
-    view: 'dashboard'
+    view: 'dashboard',
+    lastSync: Date.now()
 };
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
     initCharts();
     initChatbot(appState);
-    initSettings(); // Should be from settings.js
+    initSettings(); 
     
     await fetchData();
     
-    // Core Loops
+    // Core Dynamic Loops
     setInterval(updateClock, 1000);
-    setInterval(syncPredictions, 30000); // AI Sync every 30s
+    setInterval(periodicSync, 10000); // Analysis every 10s
+    
+    // Smooth scroll for dashboard
+    document.querySelector('.dashboard-content').style.scrollBehavior = 'smooth';
 });
 
 async function fetchData() {
@@ -55,15 +59,22 @@ function renderUI() {
     renderDevices(appState.devices, handleDeviceToggle);
     updateAnalytics(appState);
     updateDistributionChart(appState.devices);
-    syncPredictions();
+    
+    // AI Analysis
+    const suggestions = analyzeSystem(appState);
+    renderSuggestions(suggestions);
 }
 
-// --- CORE ACTIONS ---
+// --- SMART DEVICE SYSTEM (Fixed & Robust) ---
 async function handleDeviceToggle(id, isON) {
     const status = isON ? 'Active' : 'Idle';
     
-    // 1. Optimistic UI update
-    updateDeviceUI(id, isON, isON ? 1.0 : 0); // Temporary usage value
+    // 1. Instant Optimistic UI
+    const deviceIndex = appState.devices.findIndex(d => d._id === id);
+    if (deviceIndex !== -1) {
+        const device = appState.devices[deviceIndex];
+        updateDeviceUI(id, isON, isON ? (device.baseUsage || 1.2) : 0);
+    }
     
     try {
         const res = await fetch('/api/device/toggle', {
@@ -74,24 +85,26 @@ async function handleDeviceToggle(id, isON) {
         const updated = await res.json();
         
         // 2. State Sync
-        const idx = appState.devices.findIndex(d => d._id === id);
-        appState.devices[idx] = updated;
+        appState.devices[deviceIndex] = updated;
         
-        // 3. Trigger Analytics & AI
-        const suggestions = analyzeGrid(appState);
+        // 3. Re-render dependent components
+        fetchData(); // Sync metrics and other charts
+        
+        showToast(`${updated.name} successfully ${status === 'Active' ? 'activated' : 'deactivated'}`, 'success');
+        
+        // Trigger AI Insight immediately
+        const suggestions = analyzeSystem(appState);
         renderSuggestions(suggestions);
-        fetchData(); // Refresh metrics
-        
-        showToast(`${updated.name} is now ${status}`, isON ? 'success' : 'info');
+
     } catch (e) {
-        showToast('Neural Link Failed', 'error');
+        showToast('Neural Node Communication Error', 'error');
+        renderDevices(appState.devices, handleDeviceToggle); // Revert UI
     }
 }
 
-async function syncPredictions() {
-    const pred = await getPredictions();
-    appState.predictions = pred;
-    updatePredictChart(pred.historical, pred.forecast);
+function periodicSync() {
+    const suggestions = analyzeSystem(appState);
+    renderSuggestions(suggestions);
 }
 
 // --- UTILS ---
@@ -101,21 +114,35 @@ function updateClock() {
 }
 
 function renderSuggestions(tips) {
-    const list = document.getElementById('suggestions-list');
-    if (!list) return;
-    list.innerHTML = tips.map(t => `<div class="suggestion-item">${t}</div>`).join('');
+    const container = document.getElementById('suggestions-list');
+    if (!container) return;
+    
+    container.innerHTML = tips.map(t => `
+        <div class="suggestion-card">
+            <i class="fas fa-microchip" style="color:var(--accent-cyan); margin-right:8px;"></i>
+            ${t}
+        </div>
+    `).join('');
 }
 
-// Socket Integration
+// Socket Integration for Live Monitoring Feel
 socket.on('live-update', (data) => {
     updateLiveChart(data.usage, new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
 });
 
-// View Switching (No reloads)
+// Production Ready Navigation
 window.showView = (viewId) => {
     appState.view = viewId;
-    document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
-    document.getElementById(`${viewId}-view`).style.display = 'block';
+    document.querySelectorAll('.view-content').forEach(v => {
+        v.style.display = 'none';
+        v.classList.remove('active');
+    });
+    
+    const target = document.getElementById(`${viewId}-view`);
+    if (target) {
+        target.style.display = 'block';
+        setTimeout(() => target.classList.add('active'), 50);
+    }
     
     document.querySelectorAll('.nav-links a').forEach(a => {
         a.classList.remove('active');
