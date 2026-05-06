@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexGen AI | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+</head>
+<body class="dashboard-page">
+    <div id="particles-js"></div>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>NexGen <span>AI</span></span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="devices.html"><i class="fas fa-laptop-house"></i> Devices</a>
+                <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Aman+Verma&background=00f2ff&color=000" alt="AV">
+                    <div class="u-text">
+                        <strong>Aman Verma</strong>
+                        <span>Pro Plan</span>
+                    </div>
+                </div>
+                <a href="index.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="h-left">
+                    <h1>Energy <span>Overview</span></h1>
+                    <p>Live neural grid telemetry</p>
+                </div>
+                <div class="h-right">
+                    <div class="weather-pill glass" id="weather-hub">
+                        <i class="fas fa-sun"></i>
+                        <span>32°C, Mumbai</span>
+                    </div>
+                    <button class="icon-btn glass"><i class="fas fa-bell"></i><span class="dot"></span></button>
+                    <button class="mode-toggle glass" id="theme-toggle"><i class="fas fa-moon"></i></button>
+                </div>
+            </header>
+
+            <div class="scroll-area">
+                <!-- Top Stats -->
+                <div class="stat-grid">
+                    <div class="card glass animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                        <div class="c-header"><i class="fas fa-charging-station cyan"></i> <span>Total Consumed</span></div>
+                        <div class="c-body">
+                            <h2 class="counter" data-target="152.4">0.0</h2>
+                            <span class="unit">kWh</span>
+                        </div>
+                        <div class="sparkline" id="spark1"></div>
+                    </div>
+                    <div class="card glass animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                        <div class="c-header"><i class="fas fa-bolt green"></i> <span>Current Power</span></div>
+                        <div class="c-body">
+                            <h2 class="counter" data-target="2.84">0.0</h2>
+                            <span class="unit">kW</span>
+                            <span class="tag live">LIVE</span>
+                        </div>
+                        <div class="sparkline" id="spark2"></div>
+                    </div>
+                    <div class="card glass animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
+                        <div class="c-header"><i class="fas fa-receipt purple"></i> <span>Monthly Bill</span></div>
+                        <div class="c-body">
+                            <span class="unit">₹</span>
+                            <h2 class="counter" data-target="2450">0</h2>
+                        </div>
+                        <div class="sparkline" id="spark3"></div>
+                    </div>
+                    <div class="card glass animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                        <div class="c-header"><i class="fas fa-leaf yellow"></i> <span>Eco Score</span></div>
+                        <div class="c-body">
+                            <h2 class="counter" data-target="94">0</h2>
+                            <span class="unit">%</span>
+                        </div>
+                        <div class="sparkline" id="spark4"></div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="chart-grid">
+                    <div class="chart-card glass animate__animated animate__fadeInLeft">
+                        <div class="cc-header">
+                            <h3>Real-Time Consumption</h3>
+                            <div class="cc-actions">
+                                <button class="btn-mini active">Live</button>
+                                <button class="btn-mini" id="open-manual-btn"><i class="fas fa-plus"></i> Add Data</button>
+                            </div>
+                        </div>
+                        <div id="main-chart"></div>
+                    </div>
+
+                    <div class="ai-insight-card glass animate__animated animate__fadeInRight">
+                        <div class="cc-header"><h3>AI Assistant</h3></div>
+                        <div class="ai-mascot-box">
+                            <img src="ai-avatar.png" alt="AI">
+                            <div class="aura"></div>
+                        </div>
+                        <div class="ai-status">
+                            <div class="s-top"><span>Processing Load Patterns...</span> <span>85%</span></div>
+                            <div class="s-bar"><div class="s-progress" id="ai-prog"></div></div>
+                        </div>
+                        <div class="ai-msg-box">
+                            <p id="ai-msg">Analyzing current usage... You've saved 5% more energy today compared to yesterday!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="bottom-grid">
+                    <div class="tips-card glass animate__animated animate__fadeInUp">
+                        <h3>AI Saving Suggestions</h3>
+                        <div class="tips-carousel" id="tips-carousel">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="carbon-card glass animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                        <h3>Carbon Impact</h3>
+                        <div class="footprint-meter">
+                            <div class="m-val"><h1>12.4</h1><span>kg CO₂</span></div>
+                            <p>Reduced by 15% this month! 🌳</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Manual Entry Modal -->
+    <div class="modal" id="manual-modal">
+        <div class="modal-content glass animate__animated animate__zoomIn">
+            <div class="modal-header">
+                <h3>Manual Usage Input</h3>
+                <button id="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Power Usage (kW)</label>
+                    <input type="number" id="m-usage" placeholder="0.00" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="m-cat">
+                        <option>General</option>
+                        <option>HVAC</option>
+                        <option>Lighting</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="save-manual-btn">Push to Grid</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,39 +1,54 @@
-# NexGen Energy Tracker | AI Dashboard
+# NexGen Energy AI - Smart Usage Tracker
 
-A fully responsive, futuristic AI-powered energy analytics dashboard built with pure HTML, CSS, and Vanilla JavaScript.
+A professional, futuristic AI-powered energy dashboard built with Vanilla JS, Node.js, and MongoDB.
 
-## ✨ Features
-- **Futuristic UI**: Dark mode with neon glows, glassmorphism, and dynamic background particles.
-- **AI Insights**: Predictive analytics and smart recommendations powered by NexGen AI.
-- **Interactive Data**: Real-time energy usage graphs and device breakdown using Chart.js.
-- **Responsive**: Fully optimized for desktop, tablet, and mobile views.
-
-## 🛠️ Technology Stack
-- **Structure**: HTML5
-- **Styling**: CSS3 (Vanilla)
-- **Logic**: Vanilla JavaScript
-- **Visuals**: Chart.js
-- **Icons**: FontAwesome 6.4.0
-- **Background**: Particles.js
-
-## 🚀 Getting Started
-Simply open `index.html` in any modern web browser to view the dashboard.
-
-```bash
-# To run with a simple local server (optional)
-# Using Python
-python -m http.server 8000
-
-# Using Node.js (if installed)
-npx serve .
-```
+## 🚀 Features
+- **Real-Time Monitoring**: Track live energy consumption with interactive charts.
+- **AI Neural Engine**: Automated analysis of usage patterns and abnormality detection.
+- **Predictive Analytics**: Forecast future consumption and costs using AI models.
+- **Smart Device Control**: Manage IoT devices directly from the dashboard.
+- **Glassmorphism UI**: High-end futuristic design with dark/light mode and smooth animations.
 
 ## 📂 Project Structure
-- `index.html` - Main entry point
-- `style.css` - Dashboard styling
-- `script.js` - Dashboard logic and charts
-- `ai_robot_avatar.png` - NexGen AI assistant asset
-- `server/` - (Optional) Express backend logic
+```
+/project
+├── /frontend           # Elite Client Interface
+│   ├── index.html      # Authentication Portal
+│   ├── dashboard.html  # Main Ecosystem View
+│   ├── analytics.html  # Prediction & History
+│   ├── devices.html    # IoT Control Center
+│   ├── settings.html   # System Configuration
+│   ├── style.css       # Design System
+│   └── app.js          # Client Logic Engine
+│
+├── /server             # Backend Infrastructure
+│   ├── server.js       # Express Server & API
+│   ├── models/         # MongoDB Schemas
+│   ├── routes/         # API Gateways
+│   └── config/         # Database Connection
+│
+├── package.json        # Dependencies
+└── README.md           # Documentation
+```
+
+## 🛠 Tech Stack
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6)
+- **Charts**: ApexCharts, Chart.js
+- **Animations**: Animate.css, Particles.js
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB (via Mongoose)
+- **Real-time**: Socket.io
+
+## 🚦 Getting Started
+1. Install dependencies: `npm install`
+2. Start the server: `npm start`
+3. Access dashboard: `http://localhost:5000`
+
+## 📡 API Endpoints
+- `GET /api/energy`: Fetch current grid status.
+- `POST /api/usage`: Log new telemetry data.
+- `GET /api/predictions`: Retrieve AI forecast models.
+- `GET /api/alerts`: Get abnormal usage notifications.
 
 ---
-*Created with NexGen Energy AI*
+Built for the **AI Project Showcase**. Developed by **Aman Verma**.
