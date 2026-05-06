@@ -59,9 +59,11 @@ exports.toggleDevice = async (req, res) => {
     
     // Log for history
     if (status === 'Active' || status === 'ON') {
+        const units = usage * 0.1; // Simulated usage
         await Energy.create({
             deviceName: device.name,
-            units: usage * 0.1,
+            units: units,
+            cost: units * 4.5, // Base rate
             hoursUsed: 0.1,
             category: device.category
         });
