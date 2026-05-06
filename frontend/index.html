@@ -22,12 +22,11 @@
                 <span>NEXGEN <span>AI</span></span>
             </div>
             <ul class="nav-links">
-                <li><a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                <li><a href="#" id="analytics-link"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-                <li><a href="#" id="devices-link"><i class="fas fa-plug"></i> Smart Devices</a></li>
+                <li><a href="#" class="active" onclick="showView('dashboard')"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="#" onclick="showView('analytics')"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="#" onclick="showView('devices')"><i class="fas fa-plug"></i> Smart Devices</a></li>
                 <li><a href="#" id="manual-data-btn"><i class="fas fa-plus-circle"></i> Add Data</a></li>
-                <li><a href="#"><i class="fas fa-robot"></i> AI Engine</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#" onclick="showView('settings')"><i class="fas fa-cog"></i> Settings</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="status-pill">
@@ -43,7 +42,7 @@
                 <div class="ai-status-indicator">
                     <div class="status-pill">
                         <i class="fas fa-shield-alt"></i>
-                        <span>System Health: 98%</span>
+                        <span id="system-health">System Health: 98%</span>
                     </div>
                     <div class="status-pill" id="live-clock">
                         <i class="fas fa-clock"></i>
@@ -72,40 +71,116 @@
 
             <div class="dashboard-content">
                 <!-- Main Grid Section -->
-                <div class="view-section">
+                <div class="view-section" id="main-view">
                     
-                    <!-- 3. Main Device Grid -->
-                    <div class="card-title"><i class="fas fa-home"></i> Smart Devices Control</div>
-                    <div class="device-grid" id="device-container">
-                        <!-- Populated by JS -->
-                        <div class="device-card loading">Loading neural grid...</div>
-                    </div>
+                    <!-- Dashboard View -->
+                    <div id="dashboard-view" class="view-content active">
+                        <div class="card-title"><i class="fas fa-home"></i> Smart Devices Control</div>
+                        <div class="device-grid" id="device-container">
+                            <div class="device-card loading">Initialising neural nodes...</div>
+                        </div>
 
-                    <!-- 5. Analytics Section -->
-                    <div class="analytics-section">
-                        <div class="chart-container">
-                            <div class="card-title"><i class="fas fa-wave-square"></i> Real-time Energy Monitoring</div>
-                            <canvas id="liveChart"></canvas>
+                        <div class="analytics-section">
+                            <div class="chart-container">
+                                <div class="card-title"><i class="fas fa-wave-square"></i> <span class="live-indicator"></span> Real-time Energy Monitoring</div>
+                                <canvas id="liveChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <div class="card-title"><i class="fas fa-chart-pie"></i> Usage Distribution</div>
+                                <canvas id="pieChart"></canvas>
+                            </div>
                         </div>
-                        <div class="chart-container">
-                            <div class="card-title"><i class="fas fa-chart-pie"></i> Usage Distribution</div>
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                    </div>
 
-                    <!-- 6. Prediction & Suggestions Section -->
-                    <div class="predictions-row">
-                        <div class="chart-container">
-                            <div class="card-title"><i class="fas fa-brain"></i> AI Usage Prediction (7 Days)</div>
-                            <canvas id="predictChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <div class="card-title"><i class="fas fa-lightbulb"></i> AI Saving Suggestions</div>
-                            <div id="suggestions-list" class="suggestions-list">
-                                <!-- Populated by JS -->
+                        <div class="predictions-row">
+                            <div class="chart-container">
+                                <div class="card-title"><i class="fas fa-brain"></i> AI Usage Prediction (7 Days)</div>
+                                <canvas id="predictChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <div class="card-title"><i class="fas fa-lightbulb"></i> AI Saving Suggestions</div>
+                                <div id="suggestions-list" class="suggestions-list"></div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Analytics View -->
+                    <div id="analytics-view" class="view-content" style="display: none;">
+                        <div class="card-title"><i class="fas fa-chart-line"></i> Deep Analytics & Insights</div>
+                        <div class="stat-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <div class="analytics-metric-card">
+                                <p>Daily Avg</p>
+                                <h2 id="ana-daily">0.0</h2>
+                                <span>kWh</span>
+                            </div>
+                            <div class="analytics-metric-card">
+                                <p>Weekly Total</p>
+                                <h2 id="ana-weekly">0.0</h2>
+                                <span>kWh</span>
+                            </div>
+                            <div class="analytics-metric-card">
+                                <p>Peak Demand</p>
+                                <h2 id="ana-peak">0.0</h2>
+                                <span>kW</span>
+                            </div>
+                            <div class="analytics-metric-card">
+                                <p>Carbon Footprint</p>
+                                <h2 id="ana-carbon">0.0</h2>
+                                <span>kg CO₂</span>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="min-height: 400px;">
+                            <div class="card-title">Weekly Consumption Trend</div>
+                            <canvas id="weeklyTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Settings View -->
+                    <div id="settings-view" class="view-content" style="display: none;">
+                        <div class="card-title"><i class="fas fa-cog"></i> System Settings</div>
+                        <div class="settings-grid">
+                            <div class="setting-card">
+                                <div class="setting-info">
+                                    <h5>Dark Mode</h5>
+                                    <p>Toggle system theme appearance</p>
+                                </div>
+                                <div class="setting-action">
+                                    <label class="switch"><input type="checkbox" checked id="set-dark-mode"><span class="slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="setting-card">
+                                <div class="setting-info">
+                                    <h5>AI Sensitivity</h5>
+                                    <p>Control how aggressive AI optimization is</p>
+                                </div>
+                                <div class="setting-action">
+                                    <select id="set-ai-level" style="background: #222; border: 1px solid #444; color: #fff; padding: 5px; border-radius: 5px;">
+                                        <option>Low</option>
+                                        <option selected>Medium</option>
+                                        <option>High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="setting-card">
+                                <div class="setting-info">
+                                    <h5>Energy Notifications</h5>
+                                    <p>Get alerts for high consumption</p>
+                                </div>
+                                <div class="setting-action">
+                                    <label class="switch"><input type="checkbox" checked id="set-notify"><span class="slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="setting-card">
+                                <div class="setting-info">
+                                    <h5>Reset System Data</h5>
+                                    <p>Clear all local logs and settings</p>
+                                </div>
+                                <div class="setting-action">
+                                    <button class="btn-primary" onclick="resetSystem()" style="background: var(--accent-red); padding: 8px 15px; font-size: 12px; width: auto;">RESET</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- 4. AI Chatbot Panel -->
@@ -118,7 +193,7 @@
                         </div>
                     </div>
                     <div class="chat-messages" id="chat-messages">
-                        <div class="message ai">Hello! I am Nexus AI. I am monitoring your energy usage in real-time. How can I help you today?</div>
+                        <div class="message ai">I am Nexus AI. System protocols active. I am monitoring your grid for efficiency.</div>
                     </div>
                     <div class="predefined-prompts">
                         <button class="prompt-btn" onclick="askAI('How can I save energy?')">How to save?</button>
@@ -134,28 +209,22 @@
         </div>
     </div>
 
-    <!-- Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Manual Entry Modal -->
     <div class="modal-overlay" id="manual-modal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">Add Manual Usage Data</h3>
+            <h3 style="margin-bottom: 20px;">Manual Data Entry</h3>
             <div class="form-group">
                 <label>Device Name</label>
                 <select id="m-device">
-                    <option>AC</option>
-                    <option>Fan</option>
-                    <option>TV</option>
-                    <option>Refrigerator</option>
-                    <option>Washing Machine</option>
-                    <option>Lights</option>
-                    <option>Laptop</option>
-                    <option>Water Heater</option>
+                    <option>AC</option><option>Fan</option><option>TV</option>
+                    <option>Refrigerator</option><option>Washing Machine</option>
+                    <option>Lights</option><option>Laptop</option><option>Water Heater</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Watt Usage</label>
+                <label>Wattage (W)</label>
                 <input type="number" id="m-watts" placeholder="e.g. 1500">
             </div>
             <div class="form-group">
@@ -165,13 +234,11 @@
             <div class="form-group">
                 <label>Category</label>
                 <select id="m-cat">
-                    <option>HVAC</option>
-                    <option>Appliances</option>
-                    <option>Lighting</option>
-                    <option>Electronics</option>
+                    <option>HVAC</option><option>Appliances</option>
+                    <option>Lighting</option><option>Electronics</option>
                 </select>
             </div>
-            <button class="btn-primary" id="save-data-btn">Sync to Database</button>
+            <button class="btn-primary" id="save-data-btn">Update Database</button>
             <button class="btn-primary" id="close-modal-btn" style="background: transparent; border: 1px solid var(--glass-border); margin-top: 10px;">Cancel</button>
         </div>
     </div>
