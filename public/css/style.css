@@ -133,6 +133,7 @@ body {
   border: 1px solid var(--glass-border);
   border-radius: 24px;
   padding: 30px;
+  min-height: 400px;
 }
 
 /* Device Section */
@@ -153,13 +154,12 @@ body {
   gap: 15px;
 }
 
-/* Animations (GSAP Targets) */
-.animate-float { will-change: transform; }
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .charts-container { grid-template-columns: 1fr; }
-  .ai-overlay { width: calc(100% - 40px); left: 20px; bottom: 20px; }
+/* Ensure visibility */
+.view-content {
+    display: none;
+}
+.view-content.active {
+    display: block;
 }
 
 /* Utilities */
