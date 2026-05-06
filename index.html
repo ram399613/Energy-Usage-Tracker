@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexGen Energy | AI Analytics Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+</head>
+<body class="dark-theme">
+    <div class="particles-container" id="particles-js"></div>
+    
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <span class="logo-text">NexGen <span>Energy</span></span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item active" data-tab="dashboard">
+                        <a href="#"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="overview">
+                        <a href="#"><i class="fas fa-chart-pie"></i> <span>Overview</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="analytics">
+                        <a href="#"><i class="fas fa-chart-line"></i> <span>Analytics</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="devices">
+                        <a href="#"><i class="fas fa-microchip"></i> <span>Devices</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="bills">
+                        <a href="#"><i class="fas fa-file-invoice-dollar"></i> <span>Bill & Costs</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="ai-insights">
+                        <a href="#"><i class="fas fa-robot"></i> <span>AI Insights</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="alerts">
+                        <a href="#"><i class="fas fa-bell"></i> <span>Alerts</span><span class="badge">3</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="reports">
+                        <a href="#"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+                    </li>
+                    <li class="nav-item" data-tab="settings">
+                        <a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="upgrade-card">
+                    <div class="upgrade-icon"><i class="fas fa-crown"></i></div>
+                    <p>Upgrade to Pro</p>
+                    <small>Get advanced AI insights</small>
+                    <button class="btn-upgrade">Upgrade</button>
+                </div>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=00f2ff&color=000" alt="User">
+                    <div class="user-info">
+                        <p class="user-name">Alex Johnson</p>
+                        <p class="user-role">Home Owner</p>
+                    </div>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="header">
+                <div class="header-left">
+                    <div class="menu-toggle" id="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search analytics, devices...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span>Live System</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="header-btn theme-toggle"><i class="fas fa-moon"></i></button>
+                        <button class="header-btn notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-dot"></span>
+                        </button>
+                        <button class="header-btn settings"><i class="fas fa-cog"></i></button>
+                        <div class="header-profile">
+                            <img src="https://ui-avatars.com/api/?name=Alex+Johnson&background=00f2ff&color=000" alt="User">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-scroll-area">
+                <div class="dashboard-grid">
+                    <!-- Top Stats Cards -->
+                    <section class="stats-row">
+                        <div class="stat-card glass-card animate-in" style="--delay: 0.1s">
+                            <div class="stat-header">
+                                <span class="stat-title">Current Usage</span>
+                                <div class="live-tag">LIVE</div>
+                            </div>
+                            <div class="stat-value">
+                                <span class="counter" data-target="2.45">0.00</span>
+                                <span class="unit">kW</span>
+                            </div>
+                            <div class="stat-chart-mini">
+                                <canvas id="currentUsageChart"></canvas>
+                            </div>
+                            <div class="stat-footer positive">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>12% from peak</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-card animate-in" style="--delay: 0.2s">
+                            <div class="stat-header">
+                                <span class="stat-title">Today's Usage</span>
+                            </div>
+                            <div class="stat-value">
+                                <span class="counter" data-target="18.2">0.0</span>
+                                <span class="unit">kWh</span>
+                            </div>
+                            <div class="stat-chart-mini">
+                                <canvas id="todayUsageChart"></canvas>
+                            </div>
+                            <div class="stat-footer negative">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>5.4% from yesterday</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-card animate-in" style="--delay: 0.3s">
+                            <div class="stat-header">
+                                <span class="stat-title">This Month</span>
+                            </div>
+                            <div class="stat-value">
+                                <span class="counter" data-target="412">0</span>
+                                <span class="unit">kWh</span>
+                            </div>
+                            <div class="stat-chart-mini">
+                                <canvas id="monthUsageChart"></canvas>
+                            </div>
+                            <div class="stat-footer positive">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>8.2% from average</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-card animate-in" style="--delay: 0.4s">
+                            <div class="stat-header">
+                                <span class="stat-title">Estimated Bill</span>
+                            </div>
+                            <div class="stat-value">
+                                <span class="currency">$</span>
+                                <span class="counter" data-target="124.50">0.00</span>
+                            </div>
+                            <div class="stat-chart-mini">
+                                <canvas id="billTrendChart"></canvas>
+                            </div>
+                            <div class="stat-footer info">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Next billing: May 28</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Main Graph Section -->
+                    <section class="main-graph-section glass-card animate-in" style="--delay: 0.5s">
+                        <div class="section-header">
+                            <h2 class="section-title">Energy Consumption Analytics</h2>
+                            <div class="tab-controls">
+                                <button class="tab-btn active" data-period="daily">Daily</button>
+                                <button class="tab-btn" data-period="weekly">Weekly</button>
+                                <button class="tab-btn" data-period="monthly">Monthly</button>
+                                <button class="tab-btn" data-period="yearly">Yearly</button>
+                            </div>
+                        </div>
+                        <div class="main-chart-container">
+                            <canvas id="mainEnergyChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Bottom Grid -->
+                    <div class="bottom-grid">
+                        <!-- Device Usage -->
+                        <section class="device-section glass-card animate-in" style="--delay: 0.6s">
+                            <div class="section-header">
+                                <h2 class="section-title">Device Breakdown</h2>
+                            </div>
+                            <div class="device-content">
+                                <div class="device-chart-container">
+                                    <canvas id="deviceDoughnutChart"></canvas>
+                                    <div class="chart-center-text">
+                                        <span class="percentage">78%</span>
+                                        <span class="label">Efficiency</span>
+                                    </div>
+                                </div>
+                                <div class="device-list">
+                                    <div class="device-item">
+                                        <div class="device-info">
+                                            <i class="fas fa-snowflake"></i>
+                                            <span>Air Conditioner</span>
+                                        </div>
+                                        <div class="device-progress">
+                                            <div class="progress-bar" style="--progress: 45%; --color: var(--cyan);"></div>
+                                            <span class="percent">45%</span>
+                                        </div>
+                                    </div>
+                                    <div class="device-item">
+                                        <div class="device-info">
+                                            <i class="fas fa-refrigerator"></i>
+                                            <span>Refrigerator</span>
+                                        </div>
+                                        <div class="device-progress">
+                                            <div class="progress-bar" style="--progress: 20%; --color: var(--blue);"></div>
+                                            <span class="percent">20%</span>
+                                        </div>
+                                    </div>
+                                    <div class="device-item">
+                                        <div class="device-info">
+                                            <i class="fas fa-soap"></i>
+                                            <span>Washing Machine</span>
+                                        </div>
+                                        <div class="device-progress">
+                                            <div class="progress-bar" style="--progress: 15%; --color: var(--purple);"></div>
+                                            <span class="percent">15%</span>
+                                        </div>
+                                    </div>
+                                    <div class="device-item">
+                                        <div class="device-info">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span>Lighting</span>
+                                        </div>
+                                        <div class="device-progress">
+                                            <div class="progress-bar" style="--progress: 10%; --color: var(--green);"></div>
+                                            <span class="percent">10%</span>
+                                        </div>
+                                    </div>
+                                    <div class="device-item">
+                                        <div class="device-info">
+                                            <i class="fas fa-plug"></i>
+                                            <span>Others</span>
+                                        </div>
+                                        <div class="device-progress">
+                                            <div class="progress-bar" style="--progress: 10%; --color: var(--text-muted);"></div>
+                                            <span class="percent">10%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Energy Efficiency & Carbon Footprint -->
+                        <div class="efficiency-column">
+                            <section class="efficiency-card glass-card animate-in" style="--delay: 0.7s">
+                                <div class="section-header">
+                                    <h2 class="section-title">Energy Efficiency</h2>
+                                </div>
+                                <div class="efficiency-content">
+                                    <div class="gauge-container">
+                                        <svg viewBox="0 0 100 50">
+                                            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" />
+                                            <path class="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gaugeGradient)" stroke-width="8" stroke-dasharray="125.6" stroke-dashoffset="31.4" />
+                                            <defs>
+                                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" style="stop-color:var(--blue);stop-opacity:1" />
+                                                    <stop offset="100%" style="stop-color:var(--cyan);stop-opacity:1" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                        <div class="gauge-value">
+                                            <span class="score">85</span>
+                                            <span class="total">/100</span>
+                                        </div>
+                                    </div>
+                                    <p class="efficiency-text">Excellent! You're in the top 10% of energy savers in your area.</p>
+                                </div>
+                            </section>
+
+                            <section class="carbon-card glass-card animate-in" style="--delay: 0.8s">
+                                <div class="section-header">
+                                    <h2 class="section-title">Carbon Footprint</h2>
+                                    <i class="fas fa-leaf text-green"></i>
+                                </div>
+                                <div class="carbon-content">
+                                    <div class="carbon-value">
+                                        <span class="value">0.42</span>
+                                        <span class="unit">tonnes CO₂</span>
+                                    </div>
+                                    <div class="carbon-chart">
+                                        <canvas id="carbonTrendChart"></canvas>
+                                    </div>
+                                    <p class="carbon-impact">Equivalent to planting 12 trees this month.</p>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-- Smart Alerts Section -->
+                    <section class="alerts-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Smart AI Alerts</h2>
+                        </div>
+                        <div class="alerts-grid">
+                            <div class="alert-card glass-card warning animate-in" style="--delay: 0.9s">
+                                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="alert-info">
+                                    <h3>High Usage Detected</h3>
+                                    <p>AC usage is 25% higher than usual for this time of day.</p>
+                                    <span class="time">2 mins ago</span>
+                                </div>
+                                <button class="alert-action">View</button>
+                            </div>
+                            <div class="alert-card glass-card danger animate-in" style="--delay: 1.0s">
+                                <div class="alert-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                                <div class="alert-info">
+                                    <h3>Bill Increase Warning</h3>
+                                    <p>Projected bill is $15 higher than last month's forecast.</p>
+                                    <span class="time">1 hour ago</span>
+                                </div>
+                                <button class="alert-action">Details</button>
+                            </div>
+                            <div class="alert-card glass-card success animate-in" style="--delay: 1.1s">
+                                <div class="alert-icon"><i class="fas fa-medal"></i></div>
+                                <div class="alert-info">
+                                    <h3>Saving Achievement</h3>
+                                    <p>You've reduced standby power by 12% this week!</p>
+                                    <span class="time">5 hours ago</span>
+                                </div>
+                                <button class="alert-action">Share</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- AI Recommendations -->
+                    <section class="recommendations-section">
+                        <div class="section-header">
+                            <h2 class="section-title">AI Energy-Saving Suggestions</h2>
+                        </div>
+                        <div class="rec-grid">
+                            <div class="rec-card glass-card animate-in" style="--delay: 1.2s">
+                                <div class="rec-icon"><i class="fas fa-thermometer-half"></i></div>
+                                <h3>Optimize AC Usage</h3>
+                                <p>Set your AC to 24°C between 2 PM and 5 PM to save $12/month.</p>
+                                <button class="btn-rec">Apply Smart Mode</button>
+                            </div>
+                            <div class="rec-card glass-card animate-in" style="--delay: 1.3s">
+                                <div class="rec-icon"><i class="fas fa-power-off"></i></div>
+                                <h3>Unplug Idle Devices</h3>
+                                <p>Detected 5 standby devices consuming 45W. Unplug to save.</p>
+                                <button class="btn-rec">View Devices</button>
+                            </div>
+                            <div class="rec-card glass-card animate-in" style="--delay: 1.4s">
+                                <div class="rec-icon"><i class="fas fa-lightbulb"></i></div>
+                                <h3>Smart LED Lighting</h3>
+                                <p>Switching remaining 3 halogen bulbs to LED will save 8% energy.</p>
+                                <button class="btn-rec">Order LEDs</button>
+                            </div>
+                            <div class="rec-card glass-card animate-in" style="--delay: 1.5s">
+                                <div class="rec-icon"><i class="fas fa-clock"></i></div>
+                                <h3>Off-Peak Laundry</h3>
+                                <p>Run washing machine after 9 PM for 15% lower electricity rates.</p>
+                                <button class="btn-rec">Set Reminder</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right AI Insights Panel -->
+        <aside class="ai-panel">
+            <div class="ai-panel-content">
+                <div class="ai-assistant-header">
+                    <div class="ai-avatar-container">
+                        <img src="ai_robot_avatar.png" alt="AI Assistant" class="ai-avatar floating">
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <h2>NexGen AI</h2>
+                    <p class="ai-status">Thinking...</p>
+                </div>
+
+                <div class="ai-chat-bubbles">
+                    <div class="chat-bubble">
+                        <p>Hello Alex! I've analyzed your consumption patterns for the last 24 hours.</p>
+                    </div>
+                    <div class="chat-bubble">
+                        <p>Your current usage is <strong>optimal</strong>. You are currently saving <strong>1.2kW</strong> compared to last Tuesday.</p>
+                    </div>
+                </div>
+
+                <div class="prediction-card glass-card">
+                    <h3>Next Month Prediction</h3>
+                    <div class="prediction-value">
+                        <span class="value">425</span>
+                        <span class="unit">kWh</span>
+                    </div>
+                    <div class="prediction-trend negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-4.2% from this month</span>
+                    </div>
+                    <div class="prediction-chart">
+                        <canvas id="predictionMiniChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="ai-quick-stats">
+                    <div class="quick-stat">
+                        <span class="label">Anomaly Detection</span>
+                        <span class="value status-ok">Clear</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="label">Grid Reliability</span>
+                        <span class="value">99.9%</span>
+                    </div>
+                </div>
+
+                <button class="btn-ai-full">View Detailed AI Insights</button>
+
+                <div class="environmental-impact glass-card">
+                    <div class="impact-header">
+                        <i class="fas fa-globe-americas"></i>
+                        <span>Your Impact</span>
+                    </div>
+                    <div class="impact-stats">
+                        <div class="impact-item">
+                            <span class="val">85</span>
+                            <span class="lbl">Eco Score</span>
+                        </div>
+                        <div class="impact-item">
+                            <span class="val">12</span>
+                            <span class="lbl">Trees saved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
