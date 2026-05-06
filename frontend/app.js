@@ -3,8 +3,22 @@
  * Handles real-time updates, AI engine, and page interactions.
  */
 
+// --- Global State Management ---
+const NexGenState = {
+    currentUsage: 2.84,
+    totalConsumed: 152.4,
+    monthlyBill: 2450,
+    ecoScore: 94,
+    carbonFootprint: 12.4,
+    charts: {
+        main: null,
+        prediction: null,
+        sparklines: []
+    },
+    isLive: true
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Determine current page
     const body = document.body;
 
     if (body.classList.contains('dashboard-page')) {
@@ -15,24 +29,53 @@ document.addEventListener('DOMContentLoaded', () => {
         initAnalyticsPage();
     }
     
-    // Always initialize theme regardless of page
     initTheme();
+    initNotifications();
 });
 
 // --- Dashboard Logic ---
 function initDashboard() {
-    const charts = initCharts();
+    NexGenState.charts = initCharts();
     initCounters();
     initAIEngine();
     loadTips();
-    if (charts.main) {
-        initManualEntry(charts.main);
+    startLiveSimulation();
+    
+    if (NexGenState.charts.main) {
+        initManualEntry(NexGenState.charts.main);
+    }
+
+    // Live Toggle
+    const liveBtn = document.querySelector('.btn-mini.active');
+    if (liveBtn && liveBtn.innerText === "Live") {
+        liveBtn.onclick = () => {
+            NexGenState.isLive = !NexGenState.isLive;
+            liveBtn.innerText = NexGenState.isLive ? "Live" : "Paused";
+            liveBtn.style.background = NexGenState.isLive ? 'var(--blue)' : '#444';
+            showToast("System State", `Simulation ${NexGenState.isLive ? 'Resumed' : 'Paused'}.`, "info");
+        };
+    }
+
+    // Interaction for "View Suggestions"
+    const viewSugBtn = document.querySelector('.tips-card h3');
+    if (viewSugBtn) {
+        viewSugBtn.style.cursor = 'pointer';
+        viewSugBtn.onclick = () => {
+            showToast("AI Insight", "Loading deep behavioral analysis...", "info");
+            setTimeout(loadTips, 1000);
+        };
+    }
+    const upgradeBtn = document.getElementById('upgrade-btn');
+    if (upgradeBtn) {
+        upgradeBtn.onclick = () => {
+            showToast("Subscription", "Redirecting to premium secure gateway...", "success");
+        };
     }
 }
 
 // --- Analytics Page Logic ---
 function initAnalyticsPage() {
-    initCharts();
+    NexGenState.charts = initCharts();
 }
 
 // --- Devices Page Logic ---
@@ -48,10 +91,9 @@ function initCharts() {
     let predChart = null;
 
     if (isDashboard) {
-        // Main Area Chart
         const options = {
             series: [{ name: 'Power (kW)', data: [1.2, 1.8, 1.5, 2.4, 2.8, 2.2, 3.1, 2.9, 3.5, 3.2, 2.8, 2.4] }],
-            chart: { type: 'area', height: 350, toolbar: { show: false }, animations: { enabled: true } },
+            chart: { type: 'area', height: 350, toolbar: { show: false }, animations: { enabled: true, easing: 'linear', dynamicAnimation: { speed: 1000 } } },
             stroke: { curve: 'smooth', width: 3, colors: ['#00f2ff'] },
             fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
             xaxis: { categories: ['12am', '2am', '4am', '6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'], labels: { style: { colors: '#94a3b8' } } },
@@ -64,7 +106,6 @@ function initCharts() {
     }
 
     if (isAnalytics) {
-        // Prediction Line Chart
         const predOptions = {
             series: [
                 { name: 'Historical', data: [45, 52, 48, 60, 55, 65] },
@@ -78,6 +119,32 @@ function initCharts() {
         };
         predChart = new ApexCharts(isAnalytics, predOptions);
         predChart.render();
+    }
+
+    // Heatmap and Trends (Analytics Page)
+    const isHeatmap = document.getElementById('heatmap-chart');
+    const isTrends = document.getElementById('trends-chart');
+
+    if (isHeatmap) {
+        new ApexCharts(isHeatmap, {
+            series: [{ name: 'Efficiency', data: [85, 88, 92, 90, 89, 94, 95] }],
+            chart: { type: 'bar', height: 250, toolbar: { show: false } },
+            plotOptions: { bar: { borderRadius: 10, columnWidth: '50%' } },
+            colors: ['#00f2ff'],
+            xaxis: { categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+            theme: { mode: 'dark' }
+        }).render();
+    }
+
+    if (isTrends) {
+        new ApexCharts(isTrends, {
+            series: [{ name: 'Savings', data: [10, 15, 8, 12, 20, 25, 22] }],
+            chart: { type: 'line', height: 250, toolbar: { show: false } },
+            stroke: { curve: 'stepline', width: 3 },
+            colors: ['#00ff88'],
+            xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'] },
+            theme: { mode: 'dark' }
+        }).render();
     }
 
     // Common Sparklines
@@ -99,6 +166,45 @@ function initCharts() {
     return { main: mainChart, prediction: predChart };
 }
 
+// --- Live Telemetry Simulation ---
+function startLiveSimulation() {
+    setInterval(() => {
+        if (!NexGenState.isLive) return;
+
+        // Fluctuating usage
+        const delta = (Math.random() - 0.5) * 0.2;
+        NexGenState.currentUsage = Math.max(0.5, NexGenState.currentUsage + delta);
+        NexGenState.totalConsumed += (NexGenState.currentUsage / 720); // Simulating accumulation
+        
+        updateLiveUI();
+        updateMainChart();
+    }, 5000);
+}
+
+function updateLiveUI() {
+    const usageEl = document.querySelector('[data-target="2.84"]');
+    const totalEl = document.querySelector('[data-target="152.4"]');
+    
+    if (usageEl) usageEl.innerText = NexGenState.currentUsage.toFixed(2);
+    if (totalEl) totalEl.innerText = NexGenState.totalConsumed.toFixed(1);
+
+    // AI Prediction logic
+    const billEl = document.querySelector('[data-target="2450"]');
+    if (billEl) {
+        NexGenState.monthlyBill = NexGenState.totalConsumed * 8.5; // Example rate
+        billEl.innerText = Math.floor(NexGenState.monthlyBill);
+    }
+}
+
+function updateMainChart() {
+    const chart = NexGenState.charts.main;
+    if (chart) {
+        const oldData = chart.w.config.series[0].data;
+        const newData = [...oldData.slice(1), parseFloat(NexGenState.currentUsage.toFixed(2))];
+        chart.updateSeries([{ data: newData }]);
+    }
+}
+
 // --- AI Engine Simulation ---
 function initAIEngine() {
     const prog = document.getElementById('ai-prog');
@@ -107,7 +213,9 @@ function initAIEngine() {
         "Analyzing household usage patterns...",
         "Detecting energy spikes in Kitchen...",
         "Optimizing AC schedule for off-peak hours...",
-        "Calculating carbon offset from solar grid..."
+        "Calculating carbon offset from solar grid...",
+        "Predicting next month's energy velocity...",
+        "Scanning for vampire power leaks..."
     ];
 
     let i = 0;
@@ -115,21 +223,28 @@ function initAIEngine() {
         if (prog) {
             let p = 0;
             const cycle = setInterval(() => {
-                p += 5;
+                p += 2;
                 prog.style.width = p + '%';
                 if (p >= 100) {
                     clearInterval(cycle);
-                    if (msg) msg.innerText = tasks[i];
-                    i = (i + 1) % tasks.length;
+                    if (msg) {
+                        msg.classList.add('animate__fadeOut');
+                        setTimeout(() => {
+                            msg.innerText = tasks[i];
+                            msg.classList.remove('animate__fadeOut');
+                            msg.classList.add('animate__fadeIn');
+                            i = (i + 1) % tasks.length;
+                        }, 500);
+                    }
                     
-                    // Random Spike Detection
-                    if (Math.random() > 0.8) {
-                        showToast("AI Alert", "Unusual power spike detected in Living Room.", "warning");
+                    // High Usage Alert Logic
+                    if (NexGenState.currentUsage > 3.5) {
+                        showToast("High Usage Alert", "AC power surge detected. Consider eco-mode.", "warning");
                     }
                 }
-            }, 100);
+            }, 50);
         }
-    }, 6000);
+    }, 8000);
 }
 
 // --- Smooth Counters ---
@@ -137,17 +252,19 @@ function initCounters() {
     const counters = document.querySelectorAll('.counter');
     counters.forEach(c => {
         const target = parseFloat(c.dataset.target);
-        const duration = 2000;
-        const startTime = performance.now();
-
-        const update = (now) => {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const val = progress * target;
-            c.innerText = val.toFixed(target % 1 === 0 ? 0 : 1);
-            if (progress < 1) requestAnimationFrame(update);
-        };
-        requestAnimationFrame(update);
+        if (isNaN(target)) return;
+        
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                c.innerText = target.toFixed(target % 1 === 0 ? 0 : 2);
+                clearInterval(timer);
+            } else {
+                c.innerText = current.toFixed(target % 1 === 0 ? 0 : 2);
+            }
+        }, 30);
     });
 }
 
@@ -159,11 +276,15 @@ function loadTips() {
     const tips = [
         { icon: 'fas fa-temperature-low', text: 'Set AC to 25°C to save ₹120 this month.' },
         { icon: 'fas fa-power-off', text: 'Unplug devices in Guest Room to stop vampire load.' },
-        { icon: 'fas fa-lightbulb', text: 'Switch to LED bulbs in Balcony for 15% efficiency gain.' }
+        { icon: 'fas fa-lightbulb', text: 'Switch to LED bulbs in Balcony for 15% efficiency gain.' },
+        { icon: 'fas fa-clock', text: 'Shift washing machine use to non-peak hours (10PM-6AM).' }
     ];
 
-    container.innerHTML = tips.map(t => `
-        <div class="tip-item animate__animated animate__fadeIn">
+    // Shuffle tips for dynamic feel
+    const shuffled = tips.sort(() => 0.5 - Math.random());
+
+    container.innerHTML = shuffled.map(t => `
+        <div class="tip-item animate__animated animate__fadeInUp">
             <i class="${t.icon}"></i>
             <span>${t.text}</span>
         </div>
@@ -186,11 +307,12 @@ function initTheme() {
             const isLight = document.body.classList.contains('light-theme');
             btn.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            showToast("System Update", `${isLight ? 'Light' : 'Dark'} mode activated.`, "info");
         };
     }
 }
 
-// --- Global UI Helpers ---
+// --- Device Controls ---
 function initDeviceControls() {
     const btns = document.querySelectorAll('.toggle-btn');
     btns.forEach(btn => {
@@ -198,22 +320,32 @@ function initDeviceControls() {
             const card = btn.closest('.device-card');
             const statusText = card.querySelector('.dc-status span');
             const dot = card.querySelector('.dot');
+            const isTurningOff = btn.innerText.includes("Off");
             
-            if (btn.innerText === "Turn Off") {
-                btn.innerText = "Turn On";
-                statusText.innerText = "Idle";
-                dot.classList.add('gray');
-                showToast("Device Update", "System switched to idle mode.", "info");
-            } else {
-                btn.innerText = "Turn Off";
-                statusText.innerText = "Active";
-                dot.classList.remove('gray');
-                showToast("Device Update", "System is now active.", "success");
-            }
+            btn.disabled = true;
+            btn.innerText = isTurningOff ? "Powering Off..." : "Powering On...";
+            
+            setTimeout(() => {
+                btn.disabled = false;
+                if (isTurningOff) {
+                    btn.innerText = "Turn On";
+                    statusText.innerText = "Idle";
+                    dot.classList.add('gray');
+                    card.style.opacity = '0.7';
+                    showToast("Device Update", "System switched to idle mode.", "info");
+                } else {
+                    btn.innerText = "Turn Off";
+                    statusText.innerText = "Active";
+                    dot.classList.remove('gray');
+                    card.style.opacity = '1';
+                    showToast("Device Update", "System is now active.", "success");
+                }
+            }, 800);
         };
     });
 }
 
+// --- Manual Entry ---
 function initManualEntry(chart) {
     const modal = document.getElementById('manual-modal');
     const openBtn = document.getElementById('open-manual-btn');
@@ -226,35 +358,72 @@ function initManualEntry(chart) {
     if (saveBtn) {
         saveBtn.onclick = () => {
             const val = parseFloat(document.getElementById('m-usage').value);
-            if (!val) return;
+            if (!val || val <= 0) {
+                showToast("Error", "Please enter a valid power value.", "warning");
+                return;
+            }
 
+            // Add to chart
             const newData = [...chart.w.config.series[0].data, val];
             if (newData.length > 12) newData.shift();
             chart.updateSeries([{ data: newData }]);
 
-            showToast("Success", `Data point ${val} kW pushed to neural engine.`, "success");
+            // Update state
+            NexGenState.currentUsage = val;
+            updateLiveUI();
+
+            showToast("Success", `Data point ${val} kW synced with AI engine.`, "success");
             modal.classList.remove('active');
             document.getElementById('m-usage').value = '';
         };
     }
 }
 
+function initNotifications() {
+    const bell = document.querySelector('.icon-btn');
+    if (bell) {
+        bell.onclick = () => {
+            showToast("Notifications", "You have 2 new AI recommendations.", "info");
+        };
+    }
+
+    // Mobile Toggle
+    const mobToggle = document.getElementById('mobile-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    if (mobToggle && sidebar) {
+        mobToggle.onclick = () => {
+            sidebar.classList.toggle('active');
+            mobToggle.innerHTML = sidebar.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        };
+    }
+}
+
 function showToast(title, msg, type) {
-    // Simple notification implementation
     const area = document.body;
     const toast = document.createElement('div');
     toast.className = `toast glass ${type} animate__animated animate__fadeInRight`;
     toast.style.cssText = `
-        position: fixed; top: 20px; right: 20px; z-index: 9999;
-        padding: 16px; min-width: 300px; display: flex; gap: 12px;
+        position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+        padding: 16px; min-width: 320px; display: flex; gap: 15px;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.4);
     `;
+    
+    const icon = type === 'warning' ? 'fa-exclamation-triangle' : (type === 'success' ? 'fa-check-circle' : 'fa-info-circle');
+    
     toast.innerHTML = `
-        <i class="fas ${type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
-        <div><strong>${title}</strong><p style="font-size: 12px; opacity: 0.8;">${msg}</p></div>
+        <i class="fas ${icon}" style="font-size: 24px;"></i>
+        <div style="flex: 1;">
+            <strong style="display: block; margin-bottom: 4px;">${title}</strong>
+            <p style="font-size: 13px; opacity: 0.8; margin: 0;">${msg}</p>
+        </div>
+        <i class="fas fa-times" style="cursor: pointer; font-size: 14px; opacity: 0.5;" onclick="this.parentElement.remove()"></i>
     `;
     area.appendChild(toast);
+    
     setTimeout(() => {
-        toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
-        setTimeout(() => toast.remove(), 1000);
-    }, 4000);
+        if (toast.parentElement) {
+            toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
+            setTimeout(() => toast.remove(), 800);
+        }
+    }, 5000);
 }

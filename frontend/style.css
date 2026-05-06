@@ -268,3 +268,29 @@ body {
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+/* Responsiveness */
+@media (max-width: 1200px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+    .sidebar { position: fixed; left: -280px; z-index: 10000; transition: 0.4s; }
+    .sidebar.active { left: 0; }
+    .mobile-only { display: flex !important; }
+    .main-content { padding: 20px; }
+    .header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .h-right { width: 100%; justify-content: space-between; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .layout-2col { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .logo span { display: none; }
+    .logo-box { width: 50px; height: 50px; }
+    .logo-box i { font-size: 24px; }
+    .btn-primary { width: 100%; }
+    .modal-content { width: 90%; padding: 20px; }
+}
