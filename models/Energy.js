@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const energySchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
+  deviceName: {
+    type: String,
+    required: true
   },
   units: {
     type: Number,
@@ -14,17 +13,17 @@ const energySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  voltage: {
-    type: Number,
-    default: 0
-  },
-  current: {
+  hoursUsed: {
     type: Number,
     default: 0
   },
   timestamp: {
     type: Date,
     default: Date.now
+  },
+  category: {
+    type: String,
+    default: 'General'
   }
 }, {
   timestamps: true

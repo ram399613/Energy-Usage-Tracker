@@ -2,11 +2,11 @@
   "name": "energy-usage-tracker",
   "version": "2.0.0",
   "description": "AI-Powered Real-time Energy Usage Tracker",
-  "main": "server/server.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "nodemon server/server.js",
-    "seed": "node server/seed.js"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "seed": "node backend/seed.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
