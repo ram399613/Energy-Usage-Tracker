@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energy Tracker - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <header class="dashboard-header">
+    <h1>⚡ Energy Tracker</h1>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <span id="welcomeMessage">Welcome</span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <div id="thresholdAlert" class="alert" style="grid-column: 1 / -1;">
+      ⚠️ High Energy Usage Alert! You have exceeded your daily threshold of 10 kWh.
+    </div>
+
+    <div class="stats-grid" style="grid-column: 1 / -1;">
+      <div class="stat-box">
+        <h3>Total Energy (Last 30 Days)</h3>
+        <div class="value"><span id="totalUnits">0</span> kWh</div>
+      </div>
+      <div class="stat-box">
+        <h3>Estimated Cost</h3>
+        <div class="value">$<span id="totalCost">0.00</span></div>
+      </div>
+    </div>
+
+    <div class="card chart-container">
+      <h3>Real-Time Energy Consumption</h3>
+      <canvas id="energyChart"></canvas>
+    </div>
+
+    <div class="card simulate-section">
+      <div>
+        <h3>Simulate IoT Data</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Click the button to simulate a real-time IoT device sending energy usage data.</p>
+        <p id="apiStatus" style="color: #fbbf24; font-size: 0.8rem; margin-top: 0.5rem; display: none;"></p>
+      </div>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end;">
+        <button id="simulateBtn" class="btn" style="margin-top: 0;">Send Manual Data (0.5 - 2 kWh)</button>
+        <button id="resetGraphBtn" class="btn" style="margin-top: 0; background: var(--danger-color);">Reset Graph Data</button>
+      </div>
+    </div>
+
+    <div class="card ai-card" style="grid-column: 1 / -1; background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid #334155;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <h3 style="color: #00d2ff; margin: 0;">🤖 AI Energy Analysis & Predictions</h3>
+          <span class="badge-live">LIVE</span>
+        </div>
+        <button id="aiBtn" class="btn" style="width: auto; margin: 0;">Generate AI Insights</button>
+      </div>
+      <div id="aiLoading" style="display: none; color: var(--text-muted); font-style: italic;">
+        Analyzing your energy consumption patterns...
+      </div>
+      <div id="aiResults" style="display: none; margin-top: 1rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: #0f172a; padding: 1rem; border-radius: 0.5rem;">
+            <h4 style="color: #94a3b8; margin-bottom: 0.5rem; font-size: 0.9rem;">🌍 Real-Time Context</h4>
+            <p><strong>Weather:</strong> <span id="aiWeather">N/A</span></p>
+            <p><strong>Grid Status:</strong> <span id="aiGrid">N/A</span></p>
+            <p><strong>Current Rate:</strong> <span id="aiRate">N/A</span></p>
+          </div>
+          <div style="background: #0f172a; padding: 1rem; border-radius: 0.5rem;">
+            <h4 style="color: #94a3b8; margin-bottom: 0.5rem; font-size: 0.9rem;">🚀 AI Predictions</h4>
+            <p><strong>Next Month Cost:</strong> $<span id="aiPredictedCost">0.00</span></p>
+            <p><strong>Projected Usage:</strong> <span id="aiPredictedUnits">0</span> kWh</p>
+            <p><strong>Peak Time:</strong> <span id="aiPeakTime">N/A</span></p>
+          </div>
+        </div>
+
+        <div id="anomalyAlert" style="display: none; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 1rem; color: #fca5a5;">
+          ⚠️ <strong>Anomaly Detected:</strong> <span id="anomalyCount">0</span> unusually high energy spikes found.
+        </div>
+
+        <div style="padding: 1rem; background: rgba(0, 210, 255, 0.1); border-left: 4px solid #00d2ff; border-radius: 4px;">
+          <h4 style="margin-bottom: 0.5rem; color: #f1f5f9;">🧠 Adaptive AI Recommendations:</h4>
+          <ul id="aiTips" style="margin-left: 1.5rem; color: #94a3b8; line-height: 1.6;">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/apiService.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

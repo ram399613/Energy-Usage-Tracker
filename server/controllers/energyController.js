@@ -5,7 +5,7 @@ const COST_PER_KWH = 0.15;
 
 const addEnergyData = async (req, res, next) => {
   try {
-    const { units } = req.body;
+    const { units, voltage, current } = req.body;
 
     if (units === undefined || units === null) {
       res.status(400);
@@ -17,7 +17,9 @@ const addEnergyData = async (req, res, next) => {
     const energyData = await Energy.create({
       userId: req.user.id,
       units,
-      cost
+      cost,
+      voltage: voltage || 0,
+      current: current || 0
     });
 
     // Emitting real-time event via socket.io

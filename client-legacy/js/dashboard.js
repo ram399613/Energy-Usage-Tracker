@@ -200,20 +200,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Also simulate automatically every 30 seconds for demo purposes
-  setInterval(async () => {
-    const randomUnits = (Math.random() * (1.5 - 0.2) + 0.2).toFixed(2);
-    try {
-      await fetch('/api/energy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ units: Number(randomUnits) })
-      });
-    } catch (error) {}
-  }, 30000);
+  // Real-Time IoT Data Fetching Logic
+  const refreshRealTimeData = async () => {
+    const apiStatus = document.getElementById('apiStatus');
+    const iotData = await apiService.fetchIotData();
+
+    if (iotData && iotData.units > 0) {
+      // API Data available
+      apiStatus.style.display = 'block';
+      apiStatus.textContent = '🟢 Real-time data connected (ThingSpeak)';
+      apiStatus.style.color = '#10b981';
+
+      try {
+        await fetch('/api/energy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ 
+            units: Number(iotData.units),
+            voltage: iotData.voltage,
+            current: iotData.current
+          })
+        });
+      } catch (error) {
+        console.error('API Data sync error:', error);
+      }
+    } else {
+      // Fallback to manual simulation
+      apiStatus.style.display = 'block';
+      apiStatus.textContent = '⚠️ Live data unavailable, using manual simulation';
+      apiStatus.style.color = '#fbbf24';
+
+      const randomUnits = (Math.random() * (1.5 - 0.2) + 0.2).toFixed(2);
+      try {
+        await fetch('/api/energy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ units: Number(randomUnits) })
+        });
+      } catch (error) {}
+    }
+  };
+
+  // Weather Suggestion Logic
+  const updateWeatherContext = async () => {
+    const weatherData = await apiService.fetchWeatherData();
+    if (weatherData) {
+      const suggestion = apiService.getUsageSuggestion(weatherData.temp);
+      const tipsUl = document.getElementById('aiTips');
+      
+      // If AI results are visible, append weather suggestion
+      if (document.getElementById('aiResults').style.display === 'block') {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>Weather Insight (${weatherData.temp}°C):</strong> ${suggestion}`;
+        li.style.color = '#00d2ff';
+        li.style.marginTop = '0.5rem';
+        tipsUl.appendChild(li);
+      }
+    }
+  };
+
+  // Start Real-Time Interval (every 15 seconds)
+  const refreshInterval = setInterval(refreshRealTimeData, 15000);
+  
+  // Update weather every 5 minutes
+  setInterval(updateWeatherContext, 300000);
+  updateWeatherContext();
 
   // Reset Graph Data
   document.getElementById('resetGraphBtn').addEventListener('click', async () => {

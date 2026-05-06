@@ -14,6 +14,14 @@ const energySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  voltage: {
+    type: Number,
+    default: 0
+  },
+  current: {
+    type: Number,
+    default: 0
+  },
   timestamp: {
     type: Date,
     default: Date.now

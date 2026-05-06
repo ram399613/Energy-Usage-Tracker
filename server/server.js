@@ -25,7 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 // Set up static folder for client
-app.use(express.static(path.join(__dirname, '../client')));
+app.use(express.static(path.join(__dirname, '../dist')));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -55,7 +55,7 @@ app.use(errorHandler);
 
 // Fallback for SPA or unknown routes
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../client', 'login.html'));
+  res.sendFile(path.resolve(__dirname, '../dist', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
