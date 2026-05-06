@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" style="background-color: #0f172a;">
+<html lang="en" style="background-color: #0b1120;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexGen AI | Master Grid Control</title>
+    <title>NEXUS AI | Neural Grid Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <style>
-        body { background-color: #0f172a; visibility: hidden; }
+        body { background-color: #0b1120; visibility: hidden; }
         body.loaded { visibility: visible; }
+        .ai-health-bar { width: 100px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; display: inline-block; }
+        .ai-health-fill { height: 100%; background: var(--accent-cyan); width: 98%; }
     </style>
 </head>
 <body class="loaded">
@@ -22,29 +24,34 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <i class="fas fa-bolt"></i>
-                <span>NEXGEN <span>AI</span></span>
+                <i class="fas fa-brain"></i>
+                <span>NEXUS <span>AI</span></span>
             </div>
             <ul class="nav-links">
-                <li><a href="#" class="active" onclick="showView('dashboard')"><i class="fas fa-th-large"></i> <span>Dashboard</span></a></li>
-                <li><a href="#" onclick="showView('analytics')"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
-                <li><a href="#" onclick="showView('settings')"><i class="fas fa-sliders-h"></i> <span>Settings</span></a></li>
+                <li><a href="#" class="active" onclick="showView('dashboard')"><i class="fas fa-grid-2"></i> <span>Dashboard</span></a></li>
+                <li><a href="#" onclick="showView('analytics')"><i class="fas fa-chart-network"></i> <span>Analytics</span></a></li>
+                <li><a href="#" onclick="showView('manual')"><i class="fas fa-database"></i> <span>Data Entry</span></a></li>
+                <li><a href="#" onclick="showView('settings')"><i class="fas fa-gear"></i> <span>Settings</span></a></li>
             </ul>
             <div class="sidebar-footer">
-                <div class="status-pill"><div class="live-dot"></div><span>Neural Grid Active</span></div>
+                <div class="status-pill"><div class="live-dot"></div><span>AI Monitoring Live</span></div>
             </div>
         </aside>
 
         <div class="main-layout">
-            <!-- Header -->
+            <!-- Top AI Status Bar -->
             <header class="top-bar">
                 <div class="ai-status-indicator">
-                    <div class="status-pill"><i class="fas fa-microchip"></i><span id="system-health">Grid Health: 99%</span></div>
+                    <div class="status-pill">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>AI Health: </span>
+                        <div class="ai-health-bar"><div class="ai-health-fill"></div></div>
+                    </div>
                     <div class="status-pill" id="live-clock"><i class="fas fa-clock"></i><span>--:--:--</span></div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-item"><span>Current Load</span><strong id="total-consumed">0.0 kWh</strong></div>
-                    <div class="metric-item"><span>Active Nodes</span><strong id="active-devices-count">0</strong></div>
+                    <div class="metric-item"><span>Grid Footprint</span><strong id="ana-carbon">0.0 kg</strong></div>
+                    <div class="metric-item"><span>Efficiency Score</span><strong id="eco-score" style="color:var(--accent-cyan)">94%</strong></div>
                     <div class="metric-item"><span>Est. Bill</span><strong id="est-bill">₹0</strong></div>
                 </div>
             </header>
@@ -54,16 +61,16 @@
                     
                     <!-- Dashboard -->
                     <div id="dashboard-view" class="view-content active">
-                        <div class="section-header"><i class="fas fa-plug"></i> Smart Device Grid</div>
+                        <div class="section-header"><i class="fas fa-microchip"></i> Smart Device Grid</div>
                         <div class="device-grid" id="device-container"></div>
 
                         <div class="charts-grid" style="margin-top: 30px;">
                             <div class="chart-box">
-                                <div class="section-header"><i class="fas fa-wave-square"></i> Real-time Telemetry</div>
+                                <div class="section-header"><i class="fas fa-wave-pulse"></i> Real-time Telemetry</div>
                                 <div style="height: 250px;"><canvas id="liveChart"></canvas></div>
                             </div>
                             <div class="chart-box">
-                                <div class="section-header"><i class="fas fa-chart-pie"></i> Distribution</div>
+                                <div class="section-header"><i class="fas fa-chart-doughnut"></i> Consumption Split</div>
                                 <div style="height: 250px;"><canvas id="pieChart"></canvas></div>
                             </div>
                         </div>
@@ -71,49 +78,76 @@
 
                     <!-- Analytics -->
                     <div id="analytics-view" class="view-content" style="display: none;">
-                        <div class="section-header"><i class="fas fa-brain"></i> Neural Analytics</div>
+                        <div class="section-header"><i class="fas fa-analytics"></i> Neural Analytics</div>
                         <div class="analytics-grid">
-                            <div class="ana-card"><p>Daily Usage</p><h2 id="ana-daily">0.0</h2><span>kWh</span></div>
-                            <div class="ana-card"><p>Projected Bill</p><h2 id="ana-weekly">0.0</h2><span>₹</span></div>
-                            <div class="ana-card"><p>Carbon Saved</p><h2 id="ana-carbon">0.0</h2><span>kg</span></div>
+                            <div class="ana-card"><p>Daily Units</p><h2 id="ana-daily">0.0</h2><span>kWh</span></div>
+                            <div class="ana-card"><p>Weekly Projected</p><h2 id="ana-weekly">0.0</h2><span>kWh</span></div>
+                            <div class="ana-card"><p>System Peak</p><h2 id="ana-peak">0.0</h2><span>kW</span></div>
                         </div>
                         <div class="chart-box" style="margin-top: 20px; min-height: 400px;">
-                            <div class="section-header"><i class="fas fa-chart-bar"></i> Monthly Prediction Graph</div>
+                            <div class="section-header"><i class="fas fa-brain-circuit"></i> AI Forecasting Trend</div>
                             <div style="height: 350px;"><canvas id="predictChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Data Entry -->
+                    <div id="manual-view" class="view-content" style="display: none;">
+                        <div class="section-header"><i class="fas fa-plus-circle"></i> Manual Grid Update</div>
+                        <div class="manual-form-container" style="background: var(--bg-card); padding: 40px; border-radius: 30px; border: 1px solid var(--glass-border); max-width: 600px;">
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-dim);">Device Name</label>
+                                <select id="m-device" style="width: 100%; padding: 15px; background: #1a1f2e; border: 1px solid #334155; color: #fff; border-radius: 15px;">
+                                    <option>Air Conditioner</option><option>Washing Machine</option><option>OLED TV</option>
+                                    <option>Refrigerator</option><option>Kitchen Appliances</option><option>Custom Device</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-dim);">Wattage Consumption (W)</label>
+                                <input type="number" id="m-watts" placeholder="1500" style="width: 100%; padding: 15px; background: #1a1f2e; border: 1px solid #334155; color: #fff; border-radius: 15px;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-dim);">Duration (Hours)</label>
+                                <input type="number" id="m-hours" placeholder="5" style="width: 100%; padding: 15px; background: #1a1f2e; border: 1px solid #334155; color: #fff; border-radius: 15px;">
+                            </div>
+                            <button class="btn-primary" id="save-data-btn" style="width: 100%; padding: 18px; background: var(--accent-cyan); color: #000; font-weight: 800; border: none; border-radius: 15px; cursor: pointer; transition: 0.3s;">PUSH TO GRID DATABASE</button>
                         </div>
                     </div>
 
                     <!-- Settings -->
                     <div id="settings-view" class="view-content" style="display: none;">
-                        <div class="section-header"><i class="fas fa-cog"></i> Configuration</div>
+                        <div class="section-header"><i class="fas fa-sliders"></i> Configuration</div>
                         <div class="device-grid">
                             <div class="device-card">
-                                <h4>Slab Rate Detection</h4>
-                                <p class="usage-text">Auto-calculate bill based on local slab rates.</p>
+                                <h4>Neural Smoothing</h4>
+                                <p class="usage-text">Enable AI animation interpolation.</p>
                                 <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                             </div>
                             <div class="device-card">
-                                <h4>AI Sensitivity</h4>
-                                <p class="usage-text">Adjust neural engine threshold.</p>
-                                <input type="range" min="1" max="100" value="75" style="width: 100%; margin-top: 10px; accent-color: var(--accent-cyan);">
+                                <h4>Grid Alerts</h4>
+                                <p class="usage-text">Notify on abnormal power spikes.</p>
+                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- AI Sidebar -->
+                <!-- AI Assistant Sidebar -->
                 <aside class="ai-panel">
                     <div class="ai-header">
-                        <div class="ai-bot-avatar"><i class="fas fa-robot"></i></div>
-                        <div><h4>Nexus AI</h4><span style="font-size: 11px; color: var(--accent-cyan);">CONNECTED</span></div>
+                        <div class="ai-bot-avatar"><i class="fas fa-ghost"></i></div>
+                        <div><h4>Nexus Assistant</h4><span style="font-size: 11px; color: var(--accent-cyan);">THINKING...</span></div>
                     </div>
                     
-                    <div class="section-header"><i class="fas fa-lightbulb"></i> Neural Insights</div>
+                    <div class="section-header"><i class="fas fa-lightbulb-on"></i> Smart Insights</div>
                     <div class="suggestions-box" id="suggestions-list" style="margin-top: 10px;"></div>
                     
+                    <div class="chat-container" style="flex: 1; overflow-y: auto; margin: 20px 0; display: flex; flex-direction: column; gap: 10px;" id="chat-messages">
+                        <div class="message ai">Neural link established. I am ready to optimize your home.</div>
+                    </div>
+
                     <div class="chat-input-container">
-                        <input type="text" class="chat-input" id="chat-input" placeholder="Query Master Intelligence...">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Query Nexus AI...">
                         <button class="chat-send" id="send-chat"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </aside>
