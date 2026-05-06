@@ -295,7 +295,7 @@ Include these 5 sections:
 Tone: warm, friendly, encouraging — like a helpful neighbour.
     `.trim(),
 
-    // ── PROMPT 7: Free Chat (custom question) ───────────────
+    // ── PROMPT 6: Free Chat (custom question) ───────────────
     chat: `
 Here is the household energy data in JSON:
 ${data}
