@@ -40,15 +40,14 @@ exports.toggleDevice = async (req, res) => {
     let usage = 0;
     if (status === 'Active' || status === 'ON') {
       const dev = await Device.findById(deviceId);
-      if (dev.name.includes('AC')) usage = 1.5;
-      else if (dev.name.includes('Fan')) usage = 0.05;
-      else if (dev.name.includes('TV')) usage = 0.15;
-      else if (dev.name.includes('Refrigerator')) usage = 0.2;
-      else if (dev.name.includes('Washing')) usage = 0.5;
-      else if (dev.name.includes('Lights')) usage = 0.02;
-      else if (dev.name.includes('Laptop')) usage = 0.06;
-      else if (dev.name.includes('Heater')) usage = 2.0;
-      else usage = (Math.random() * 0.5 + 0.1).toFixed(2);
+      const name = dev.name.toLowerCase();
+      if (name.includes('ac') || name.includes('conditioner')) usage = 25;
+      else if (name.includes('fan')) usage = 5;
+      else if (name.includes('tv')) usage = 8;
+      else if (name.includes('refrigerator')) usage = 15;
+      else if (name.includes('washing')) usage = 20;
+      else if (name.includes('light')) usage = 3;
+      else usage = 10; // Default
     }
     const device = await Device.findByIdAndUpdate(deviceId, { status, usage }, { new: true });
     res.json(device);

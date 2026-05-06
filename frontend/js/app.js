@@ -1,5 +1,5 @@
 /**
- * NexGen AI Dashboard - Main Application Orchestrator
+ * NexGen AI Dashboard - Optimized Smart Grid Orchestrator
  */
 import { initCharts, updateLiveChart, updateDistributionChart, updatePredictChart } from './charts.js';
 import { renderDevices, updateDeviceUI } from './devices.js';
@@ -10,7 +10,7 @@ import { initSettings, showToast, animateValue } from './utils.js';
 
 const socket = io();
 
-// CENTRALIZED APP STATE (Production Ready)
+// CENTRALIZED APP STATE
 const appState = {
     devices: [],
     metrics: {
@@ -19,10 +19,12 @@ const appState = {
         bill: 0,
         ecoScore: 94
     },
-    prevTotal: 0,
-    predictions: { historical: [], forecast: [] },
     view: 'dashboard',
-    lastSync: Date.now()
+    settings: {
+        autoRefresh: true,
+        threshold: 50,
+        notifications: true
+    }
 };
 
 // --- INITIALIZATION ---
@@ -35,10 +37,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Core Dynamic Loops
     setInterval(updateClock, 1000);
-    setInterval(periodicSync, 10000); // Analysis every 10s
+    setInterval(updateAIIntelligence, 5000); // More frequent analysis
     
-    // Smooth scroll for dashboard
-    document.querySelector('.dashboard-content').style.scrollBehavior = 'smooth';
+    setupSettingsPanel();
 });
 
 async function fetchData() {
@@ -50,6 +51,7 @@ async function fetchData() {
         appState.metrics = data.metrics;
         
         renderUI();
+        checkAlerts();
     } catch (err) {
         showToast('Grid Telemetry Offline', 'error');
     }
@@ -65,15 +67,14 @@ function renderUI() {
     renderSuggestions(suggestions);
 }
 
-// --- SMART DEVICE SYSTEM (Fixed & Robust) ---
+// --- SMART DEVICE SYSTEM (Fixed Device Logic) ---
 async function handleDeviceToggle(id, isON) {
     const status = isON ? 'Active' : 'Idle';
     
-    // 1. Instant Optimistic UI
+    // 1. Instant Response UI
     const deviceIndex = appState.devices.findIndex(d => d._id === id);
     if (deviceIndex !== -1) {
-        const device = appState.devices[deviceIndex];
-        updateDeviceUI(id, isON, isON ? (device.baseUsage || 1.2) : 0);
+        updateDeviceUI(id, isON, isON ? appState.devices[deviceIndex].usage : 0);
     }
     
     try {
@@ -82,68 +83,86 @@ async function handleDeviceToggle(id, isON) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ deviceId: id, status })
         });
-        const updated = await res.json();
         
-        // 2. State Sync
-        appState.devices[deviceIndex] = updated;
-        
-        // 3. Re-render dependent components
-        fetchData(); // Sync metrics and other charts
-        
-        showToast(`${updated.name} successfully ${status === 'Active' ? 'activated' : 'deactivated'}`, 'success');
-        
-        // Trigger AI Insight immediately
-        const suggestions = analyzeSystem(appState);
-        renderSuggestions(suggestions);
-
+        if (res.ok) {
+            fetchData(); // Sync everything
+            showToast(`${isON ? 'Activated' : 'Deactivated'} Successfully`, 'success');
+        }
     } catch (e) {
-        showToast('Neural Node Communication Error', 'error');
-        renderDevices(appState.devices, handleDeviceToggle); // Revert UI
+        showToast('Neural Node Error', 'error');
+        fetchData(); // Revert
     }
 }
 
-function periodicSync() {
+// --- AI INTELLIGENCE & ALERTS ---
+function updateAIIntelligence() {
     const suggestions = analyzeSystem(appState);
     renderSuggestions(suggestions);
+    checkAlerts();
 }
 
-// --- UTILS ---
-function updateClock() {
-    const el = document.getElementById('live-clock');
-    if (el) el.querySelector('span').innerText = new Date().toLocaleTimeString();
+function checkAlerts() {
+    const container = document.getElementById('ai-panel-alerts');
+    if (!container) return;
+    
+    const totalPower = appState.devices.filter(d => d.status === 'Active').reduce((sum, d) => sum + d.usage, 0);
+    const threshold = parseInt(localStorage.getItem('energy-threshold')) || 50;
+
+    container.innerHTML = '';
+    
+    if (totalPower > threshold) {
+        container.innerHTML = `
+            <div class="alert-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="alert-content">
+                    <h6>High Usage Alert</h6>
+                    <p>Current load ${totalPower.toFixed(0)} units exceeds your ${threshold} unit threshold.</p>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// --- SETTINGS (localStorage Persistence) ---
+function setupSettingsPanel() {
+    const thresholdSlider = document.getElementById('set-threshold');
+    const autoRefreshToggle = document.getElementById('set-auto-refresh');
+    
+    if (thresholdSlider) {
+        thresholdSlider.value = localStorage.getItem('energy-threshold') || 50;
+        thresholdSlider.oninput = (e) => {
+            localStorage.setItem('energy-threshold', e.target.value);
+            checkAlerts();
+        };
+    }
+
+    if (autoRefreshToggle) {
+        autoRefreshToggle.checked = localStorage.getItem('auto-refresh') !== 'false';
+        autoRefreshToggle.onchange = (e) => {
+            localStorage.setItem('auto-refresh', e.target.checked);
+        };
+    }
 }
 
 function renderSuggestions(tips) {
     const container = document.getElementById('suggestions-list');
     if (!container) return;
-    
-    container.innerHTML = tips.map(t => `
-        <div class="suggestion-card">
-            <i class="fas fa-microchip" style="color:var(--accent-cyan); margin-right:8px;"></i>
-            ${t}
-        </div>
-    `).join('');
+    container.innerHTML = tips.map(t => `<div class="suggestion-card">${t}</div>`).join('');
 }
 
-// Socket Integration for Live Monitoring Feel
+function updateClock() {
+    const el = document.getElementById('live-clock');
+    if (el) el.querySelector('span').innerText = new Date().toLocaleTimeString();
+}
+
+// Socket Live Monitoring
 socket.on('live-update', (data) => {
-    updateLiveChart(data.usage, new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    updateLiveChart(data.usage, new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 });
 
-// Production Ready Navigation
 window.showView = (viewId) => {
-    appState.view = viewId;
-    document.querySelectorAll('.view-content').forEach(v => {
-        v.style.display = 'none';
-        v.classList.remove('active');
-    });
-    
-    const target = document.getElementById(`${viewId}-view`);
-    if (target) {
-        target.style.display = 'block';
-        setTimeout(() => target.classList.add('active'), 50);
-    }
-    
+    document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
+    document.getElementById(`${viewId}-view`).style.display = 'block';
     document.querySelectorAll('.nav-links a').forEach(a => {
         a.classList.remove('active');
         if (a.getAttribute('onclick')?.includes(viewId)) a.classList.add('active');
