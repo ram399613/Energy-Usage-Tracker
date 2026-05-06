@@ -109,11 +109,101 @@
             </div>
 
             <!-- Grid & Challenges -->
+            <!-- Grid View -->
             <div id="grid-view" class="view-content">
-                <div class="source-config"><h3>Grid Telemetry</h3><p>Real-time flow analysis.</p></div>
+                <div class="source-config">
+                    <h3><i class="fas fa-network-wired"></i> Neural Grid Telemetry</h3>
+                    <p style="opacity: 0.7; margin-top: 5px;">Real-time energy flow and distribution analysis.</p>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <p>Grid Frequency</p>
+                        <h3>50.02 Hz</h3>
+                        <p class="text-green"><i class="fas fa-check-circle"></i> Phase Synchronized</p>
+                    </div>
+                    <div class="metric-card">
+                        <p>Voltage Level</p>
+                        <h3>231.4 V</h3>
+                        <p class="text-blue"><i class="fas fa-bolt"></i> Stable Flow</p>
+                    </div>
+                    <div class="metric-card">
+                        <p>Transmission Loss</p>
+                        <h3>0.8%</h3>
+                        <p style="color: var(--accent-cyan);"><i class="fas fa-shield-halved"></i> Optimal Path</p>
+                    </div>
+                </div>
+                <div class="charts-container" style="grid-template-columns: 1fr;">
+                    <div class="chart-card">
+                        <h4>Energy Flow Distribution</h4>
+                        <div id="grid-flow-container" style="display: flex; justify-content: space-around; align-items: center; height: 300px; padding: 20px;">
+                            <div class="flow-node">
+                                <div class="node-icon" style="color: var(--accent-blue);"><i class="fas fa-solar-panel fa-2x"></i></div>
+                                <p>Solar</p>
+                                <span class="text-blue">4.2 kW</span>
+                            </div>
+                            <div class="flow-arrow" style="font-size: 24px; color: rgba(255,255,255,0.1);"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            <div class="flow-node">
+                                <div class="node-icon" style="color: var(--accent-cyan);"><i class="fas fa-microchip fa-3x"></i></div>
+                                <p>Neural Hub</p>
+                                <span class="text-main">Active</span>
+                            </div>
+                            <div class="flow-arrow" style="font-size: 24px; color: rgba(255,255,255,0.1);"><i class="fas fa-long-arrow-alt-right"></i></div>
+                            <div class="flow-node">
+                                <div class="node-icon" style="color: var(--accent-purple);"><i class="fas fa-home fa-2x"></i></div>
+                                <p>Household</p>
+                                <span class="text-purple">Load: 3.8 kW</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- Challenges View -->
             <div id="challenges-view" class="view-content">
-                <div class="source-config"><h3>Energy Challenges</h3><p>Gamified energy saving protocols.</p></div>
+                <div class="source-config">
+                    <h3><i class="fas fa-trophy"></i> Energy Efficiency Challenges</h3>
+                    <p style="opacity: 0.7; margin-top: 5px;">Gamified protocols to optimize your carbon footprint.</p>
+                </div>
+                <div class="device-list" id="challenges-container">
+                    <!-- Challenge Card 1 -->
+                    <div class="metric-card" style="border-left: 4px solid var(--accent-green);">
+                        <div style="display: flex; justify-content: space-between;">
+                            <h4>Solar Maximizer</h4>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: var(--accent-green); padding: 4px 10px; border-radius: 20px; font-size: 10px;">ACTIVE</span>
+                        </div>
+                        <p style="font-size: 12px; margin: 10px 0; opacity: 0.7;">Use 80% of your energy from solar for 48 hours.</p>
+                        <div class="usage-progress" style="height: 6px; margin: 15px 0;">
+                            <div class="progress-fill" style="width: 65%; background: var(--accent-green);"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                            <span>Progress: 65%</span>
+                            <span class="text-green">+500 XP</span>
+                        </div>
+                    </div>
+                    <!-- Challenge Card 2 -->
+                    <div class="metric-card" style="border-left: 4px solid var(--accent-blue);">
+                        <div style="display: flex; justify-content: space-between;">
+                            <h4>Night Owl</h4>
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); padding: 4px 10px; border-radius: 20px; font-size: 10px;">JOINED</span>
+                        </div>
+                        <p style="font-size: 12px; margin: 10px 0; opacity: 0.7;">Shift heavy appliance usage to 11 PM - 5 AM.</p>
+                        <div class="usage-progress" style="height: 6px; margin: 15px 0;">
+                            <div class="progress-fill" style="width: 20%; background: var(--accent-blue);"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                            <span>Progress: 20%</span>
+                            <span class="text-blue">+300 XP</span>
+                        </div>
+                    </div>
+                    <!-- Challenge Card 3 -->
+                    <div class="metric-card" style="opacity: 0.8;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <h4>Off-Grid Day</h4>
+                            <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 10px;">LOCKED</span>
+                        </div>
+                        <p style="font-size: 12px; margin: 10px 0; opacity: 0.7;">Run entirely on renewable sources for 24 hours.</p>
+                        <button class="tab-btn" style="width: 100%; margin-top: 15px; font-size: 12px; padding: 8px;">Unlock at Lvl 5</button>
+                    </div>
+                </div>
             </div>
 
         </main>
