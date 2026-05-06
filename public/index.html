@@ -48,19 +48,34 @@
 
                 <div class="metrics-grid">
                     <div class="metric-card">
-                        <p>Current Usage <i class="fas fa-question-circle" style="opacity: 0.3;"></i></p>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <p>Current Usage</p>
+                            <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-blue);">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                        </div>
                         <h3 id="total-consumed">0.00 kW</h3>
-                        <p class="text-blue">Updates every 3 seconds</p>
+                        <p class="text-blue"><span class="pulse-dot"></span> Grid Synchronized</p>
                     </div>
                     <div class="metric-card">
-                        <p>Low Emission Energy <i class="fas fa-question-circle" style="opacity: 0.3;"></i></p>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <p>Low Emission</p>
+                            <div style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-green);">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                        </div>
                         <h3 id="eco-score">75.6%</h3>
-                        <p class="text-green">☀️ Excellent!</p>
+                        <p class="text-green">☀️ Optimal Efficiency</p>
                     </div>
                     <div class="metric-card">
-                        <p>Monthly Cost <i class="fas fa-question-circle" style="opacity: 0.3;"></i></p>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <p>Monthly Cost</p>
+                            <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-red);">
+                                <i class="fas fa-indian-rupee-sign"></i>
+                            </div>
+                        </div>
                         <h3 id="est-bill">₹0</h3>
-                        <p style="color: var(--accent-red);">Estimated total</p>
+                        <p style="color: var(--accent-red);">Projected total</p>
                     </div>
                 </div>
 

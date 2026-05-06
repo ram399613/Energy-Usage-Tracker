@@ -56,6 +56,15 @@ const initApp = async () => {
         await fetchData();
         appState.isInitialized = true;
         
+        // --- Premium Entry Animations ---
+        if (window.gsap) {
+            const tl = gsap.timeline();
+            tl.from(".header", { duration: 1, y: -50, opacity: 0, ease: "power4.out" })
+              .from(".metric-card", { duration: 0.8, y: 30, opacity: 0, stagger: 0.1, ease: "back.out(1.7)" }, "-=0.5")
+              .from(".chart-card", { duration: 0.8, scale: 0.95, opacity: 0, stagger: 0.2, ease: "power2.out" }, "-=0.4")
+              .from(".ai-fab", { duration: 0.6, scale: 0, rotation: -45, ease: "back.out(2)" }, "-=0.2");
+        }
+        
         setInterval(updateClock, 1000);
         setInterval(fetchData, 5000);
         

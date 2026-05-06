@@ -5,11 +5,11 @@
 const chartInstances = {};
 
 const figmaTheme = {
-    blue: '#2563EB',
-    green: '#10B981',
-    red: '#F43F5E',
-    cyan: '#00f2ff',
-    purple: '#7000ff',
+    blue: '#3b82f6',
+    green: '#10b981',
+    red: '#ef4444',
+    cyan: '#06b6d4',
+    purple: '#8b5cf6',
     text: '#94A3B8',
     grid: 'rgba(255, 255, 255, 0.05)'
 };
@@ -37,12 +37,20 @@ export const initCharts = () => {
                 labels: Array(20).fill(''),
                 datasets: [{
                     data: Array(20).fill(0),
-                    borderColor: figmaTheme.blue,
+                    borderColor: figmaTheme.cyan,
                     borderWidth: 3,
                     fill: true,
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 0
+                    backgroundColor: (context) => {
+                        const ctx = context.chart.ctx;
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                        gradient.addColorStop(0, 'rgba(6, 182, 212, 0.2)');
+                        gradient.addColorStop(1, 'rgba(6, 182, 212, 0)');
+                        return gradient;
+                    },
+                    tension: 0.45,
+                    pointRadius: 0,
+                    borderCapStyle: 'round',
+                    borderJoinStyle: 'round'
                 }]
             },
             options: { ...baseOptions, animation: false }
