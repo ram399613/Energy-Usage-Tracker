@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 
-const deviceSchema = new mongoose.Schema({
+const DeviceSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  status: { type: String, enum: ['Active', 'Idle', 'OFF', 'ON'], default: 'Idle' },
-  usage: { type: Number, default: 0 },
-  efficiency: { type: String, default: '--' },
-  icon: { type: String, default: 'fa-bolt' },
-  room: { type: String, default: 'General' },
-  category: { type: String, default: 'General' }
-}, { timestamps: true });
+  icon: { type: String, default: 'fa-plug' },
+  status: { type: String, enum: ['Active', 'Idle', 'ON', 'OFF'], default: 'Idle' },
+  usage: { type: Number, default: 0 }, // Current usage in kW or units
+  watts: { type: Number, default: 100 }, // Specific wattage for this device
+  category: { type: String, default: 'General' },
+  efficiency: { type: String, default: '95%' },
+  health: { type: Number, default: 98 },
+  runtime: { type: Number, default: 0 }, // Cumulative runtime in hours
+  lastReset: { type: Date, default: Date.now }
+});
 
-module.exports = mongoose.model('Device', deviceSchema);
+module.exports = mongoose.model('Device', DeviceSchema);

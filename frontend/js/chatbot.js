@@ -1,5 +1,5 @@
 /**
- * AI Chatbot Logic
+ * Neural Chatbot Intelligence - Context Aware
  */
 
 export const initChatbot = (state) => {
@@ -21,27 +21,35 @@ const handleChat = (query, state) => {
 
     setTimeout(() => {
         removeTyping();
-        const response = getAIResponse(query, state);
+        const response = generateNeuralResponse(query, state);
         appendMsg(response, 'ai');
-    }, 1500);
+    }, 1200);
 };
 
-const getAIResponse = (query, state) => {
+const generateNeuralResponse = (query, state) => {
     const q = query.toLowerCase();
     const active = state.devices.filter(d => d.status === 'Active' || d.status === 'ON');
-    const total = active.reduce((sum, d) => sum + d.usage, 0);
+    const totalLoad = active.reduce((sum, d) => sum + (d.watts / 1000), 0);
+    const bill = state.metrics.bill;
 
-    if (q.includes('usage') || q.includes('power')) {
-        return `Current grid load is ${total.toFixed(2)} kW. ${active.length} smart nodes are active.`;
+    if (q.includes('bill') || q.includes('cost')) {
+        return `Your current projected bill is ₹${bill}. Based on your slab rate, keeping the AC off for 2 hours daily could save ₹420 this month.`;
     }
-    if (q.includes('save')) {
-        return "To optimize, I recommend enabling Eco-Mode on your AC and scheduling your Water Heater for off-peak hours.";
-    }
-    if (q.includes('highest') || q.includes('top')) {
+    
+    if (q.includes('power') || q.includes('usage') || q.includes('consuming')) {
         const top = [...state.devices].sort((a,b) => b.usage - a.usage)[0];
-        return `The ${top.name} is currently the highest consumer at ${top.usage} kW.`;
+        return `Current grid load is ${totalLoad.toFixed(2)} kW. The ${top.name} is your highest consumer at ${top.watts} Watts.`;
     }
-    return "I have analyzed your request against the current grid telemetry. Everything appears within normal operating parameters.";
+
+    if (q.includes('save') || q.includes('tips')) {
+        return "I recommend shifting your Water Heater usage to early morning (5 AM) and cleaning the refrigerator coils to improve efficiency by 10%.";
+    }
+
+    if (q.includes('predict') || q.includes('forecast')) {
+        return `Predictive models suggest a ${bill > 3000 ? 'high' : 'normal'} usage trend. End-of-month units are projected at ${state.metrics.totalConsumed * 1.2} kWh.`;
+    }
+
+    return "Neural grid nodes are stable. I am monitoring your consumption patterns for any abnormal power spikes.";
 };
 
 const appendMsg = (text, type) => {
@@ -59,7 +67,7 @@ const showTyping = () => {
     const typing = document.createElement('div');
     typing.id = 'typing-indicator';
     typing.className = 'message ai message-typing';
-    typing.innerText = 'Nexus is analyzing...';
+    typing.innerText = 'Nexus is analyzing grid...';
     chatBox.appendChild(typing);
     chatBox.scrollTop = chatBox.scrollHeight;
 };

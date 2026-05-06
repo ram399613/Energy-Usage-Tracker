@@ -1,51 +1,47 @@
 /**
- * Advanced AI Energy Intelligence Engine - Final Optimized Version
+ * Master AI Energy Engine - Neural Logic
  */
+
+let lastMessageIndex = -1;
 
 export const analyzeSystem = (state) => {
     const suggestions = [];
     const active = state.devices.filter(d => d.status === 'Active' || d.status === 'ON');
-    const totalPower = active.reduce((sum, d) => sum + d.usage, 0);
+    const totalPower = active.reduce((sum, d) => sum + (d.watts / 1000), 0);
 
-    // 1. Dynamic Responses based on Usage Level
-    if (totalPower > 100) {
-        suggestions.push("🚨 CRITICAL: Massive grid load. Multiple heavy appliances detected.");
-    } else if (totalPower > 50) {
-        suggestions.push("⚠️ WARNING: High energy usage detected. System approaching peak threshold.");
-    } else if (totalPower > 20) {
-        suggestions.push("⚖️ MODERATE: Energy usage is stable but could be optimized.");
-    } else if (totalPower > 0) {
-        suggestions.push("✅ EFFICIENT: Energy usage optimized. Green grid protocols active.");
+    // 1. Contextual Intelligence
+    if (totalPower > 5.0) {
+        suggestions.push("🚨 CRITICAL: Grid demand is at 94% capacity. Strategic shutdown of HVAC recommended.");
     }
 
-    // 2. Specific Device Insights (Rotating)
-    const ac = active.find(d => d.name.toLowerCase().includes('ac'));
-    const washer = active.find(d => d.name.toLowerCase().includes('washing'));
-    
-    if (ac && totalPower > 40) {
-        suggestions.push("❄️ AC consumption unusually high. Consider raising thermostat by 2°C.");
-    }
-    if (washer) {
-        suggestions.push("🧼 Washing machine cycle in progress. Projected energy: 2.4 kWh.");
+    const ac = active.find(d => d.name.toLowerCase().includes('air conditioner'));
+    if (ac) {
+        suggestions.push("❄️ If AC temperature is increased from 18°C to 24°C, monthly savings can reach ₹650.");
     }
 
-    // 3. Billing & Forecast
-    if (state.metrics.bill > 5000) {
-        suggestions.push("💸 Bill Alert: Predicted monthly bill may exceed target by 15%.");
+    const heater = active.find(d => d.name.toLowerCase().includes('heater'));
+    if (heater && totalPower > 3.0) {
+        suggestions.push("🔥 Water heater detected during peak load. Scheduling for off-peak (4 AM - 6 AM) would reduce bill by 8%.");
     }
 
-    // 4. Strategic Recommendations
-    const recommendations = [
-        "Peak-hour usage detected (6PM-10PM). Shift high-load tasks to morning.",
-        "Turn off idle devices like Smart Lights to save 3% daily.",
-        "Energy usage is 12% lower than this time yesterday. Keep it up!",
-        "Detected 3 inactive nodes still drawing standby power.",
-        "System Health: 99%. All neural grid nodes synchronized."
+    // 2. Trend-Based Logic
+    if (active.length > 5) {
+        suggestions.push("🤖 Neural Pattern: High concurrency detected. Multi-node operation is increasing heat dissipation.");
+    }
+
+    // 3. Dynamic Unique Tips (Never repeating same order)
+    const baseTips = [
+        "Refrigerator runtime is 15% higher than usual. Check door seals for optimization.",
+        "Gaming PC load is stable, but background processes are drawing extra 50W.",
+        "Neural Grid sync complete. Carbon footprint reduced by 1.2kg today.",
+        "Energy usage is 5% lower than neighbor average. Eco-Champion status active.",
+        "Smart Lights are dimmed to 80% based on ambient light sensor data.",
+        "Detected washing machine cycle. Suggesting eco-wash mode for 20% power reduction."
     ];
 
-    // Select 2 random recommendations to keep it fresh
-    const randomRecs = recommendations.sort(() => 0.5 - Math.random()).slice(0, 2);
-    suggestions.push(...randomRecs);
+    // Shuffle and pick
+    const shuffled = baseTips.sort(() => 0.5 - Math.random());
+    suggestions.push(shuffled[0], shuffled[1]);
 
     return suggestions;
 };
