@@ -16,15 +16,39 @@ const appState = {
     isInitialized: false
 };
 
+// --- GLOBAL NAVIGATION ---
+window.showView = (viewId) => {
+    console.log(`Grid Sync: Switching to view [${viewId}]`);
+    const views = document.querySelectorAll('.view-content');
+    const tabs = document.querySelectorAll('.tab-btn');
+    
+    views.forEach(v => {
+        v.classList.remove('active');
+        v.style.display = 'none';
+    });
+    
+    const target = document.getElementById(`${viewId}-view`);
+    if (target) {
+        target.classList.add('active');
+        target.style.display = 'block';
+        if (window.gsap) gsap.from(target, { duration: 0.4, opacity: 0, y: 15 });
+    }
+    
+    tabs.forEach(b => {
+        b.classList.remove('active');
+        if (b.innerText.toLowerCase() === viewId) b.classList.add('active');
+    });
+};
+
 // --- INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', async () => {
+const initApp = async () => {
+    console.log("AI System: Initializing Neural Grid...");
+    document.body.classList.add('ready');
+    
     try {
         initCharts();
         initChatbot(appState);
         initSettings();
-        
-        // Ensure UI elements are visible even before data
-        document.body.classList.add('ready');
         
         await fetchData();
         appState.isInitialized = true;
@@ -34,9 +58,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         
     } catch (err) {
         console.error("Initialization Sync Error:", err);
-        document.body.classList.add('ready');
     }
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 async function fetchData() {
     try {
@@ -82,42 +111,16 @@ async function handleDeviceToggle(id, isON) {
             body: JSON.stringify({ deviceId: id, status })
         });
         fetchData();
-        showToast(`${appState.devices[deviceIndex]?.name || 'Node'} Synchronization Successful`, 'success');
+        showToast(`${appState.devices[deviceIndex]?.name || 'Node'} Updated`, 'success');
     } catch (e) {
         fetchData();
     }
 }
 
-// --- NAVIGATION ---
-window.showView = (viewId) => {
-    // 1. Remove active class from all views
-    document.querySelectorAll('.view-content').forEach(v => {
-        v.classList.remove('active');
-        v.style.display = 'none';
-    });
-    
-    // 2. Add active class to target view
-    const target = document.getElementById(`${viewId}-view`);
-    if (target) {
-        target.classList.add('active');
-        target.style.display = 'block';
-    }
-    
-    // 3. Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('active');
-        if (b.innerText.toLowerCase() === viewId) b.classList.add('active');
-    });
-
-    if (window.gsap) {
-        gsap.from(`#${viewId}-view`, { duration: 0.4, opacity: 0, y: 10 });
-    }
-};
-
 function renderSuggestions(tips) {
     const container = document.getElementById('suggestions-list');
     if (!container) return;
-    container.innerHTML = tips.map(t => `<div class="suggestion-card" style="font-size:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); margin-bottom:8px;">${t}</div>`).join('');
+    container.innerHTML = tips.map(t => `<div class="suggestion-card" style="font-size:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); margin-bottom:8px;">${t}</div>`).join('');
 }
 
 function updateClock() {
