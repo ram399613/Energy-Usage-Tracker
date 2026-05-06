@@ -6,9 +6,10 @@ import { renderDevices, updateDeviceUI } from './devices.js';
 import { updateAnalytics } from './analytics.js';
 import { analyzeSystem } from './ai-engine.js';
 import { initChatbot } from './chatbot.js';
-import { initSettings, showToast } from './utils.js';
+import { showToast } from './utils.js';
+import { initSettings } from './settings.js';
 
-const socket = io();
+const socket = typeof io !== 'undefined' ? io() : { on: () => {} };
 
 const appState = {
     devices: [],
@@ -31,7 +32,9 @@ window.showView = (viewId) => {
     if (target) {
         target.classList.add('active');
         target.style.display = 'block';
-        if (window.gsap) gsap.from(target, { duration: 0.4, opacity: 0, y: 15 });
+        if (window.gsap) {
+            gsap.from(target, { duration: 0.4, opacity: 0, y: 15 });
+        }
     }
     
     tabs.forEach(b => {
@@ -46,9 +49,9 @@ const initApp = async () => {
     document.body.classList.add('ready');
     
     try {
+        initSettings();
         initCharts();
         initChatbot(appState);
-        initSettings();
         
         await fetchData();
         appState.isInitialized = true;
