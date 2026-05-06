@@ -129,7 +129,7 @@ function renderSuggestions(tips) {
 
 function updateClock() {
     const el = document.getElementById('live-clock');
-    if (el) el.querySelector('span').innerText = new Date().toLocaleTimeString();
+    if (el) el.innerText = new Date().toLocaleTimeString();
 }
 
 socket.on('live-update', (data) => {

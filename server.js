@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('./db');
+const connectDB = require('./utils/db');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -22,19 +22,16 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Set up static folder - serving from frontend directory
-app.use(express.static(path.join(__dirname, '../frontend')));
-// Also serve assets if any
-app.use('/assets', express.static(path.join(__dirname, '../assets')));
+// Set up static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
-app.use('/api', require('../routes/api'));
+app.use('/api', require('./routes/api'));
 
 // Socket.io
 io.on('connection', (socket) => {
   console.log('AI System: Client connected to neural grid');
   
-  // Simulation of live updates
   const interval = setInterval(async () => {
     socket.emit('live-update', {
       timestamp: new Date(),
@@ -49,9 +46,9 @@ io.on('connection', (socket) => {
 
 app.set('io', io);
 
-// Fallback for SPA - redirect to dashboard.html since index.html might be removed or changed
+// Fallback for SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../frontend', 'dashboard.html'));
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
