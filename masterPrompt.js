@@ -57,7 +57,7 @@ async function runEnergyAI(type, mongoData) {
 
   // --- Call Claude with the master system prompt ---
   const response = await client.messages.create({
-    model: "claude-3-5-sonnet-20240620", // Fixed placeholder model
+    model: "claude-opus-4-6",
     max_tokens: 1000,
     system: `
 You are an expert home energy analyst AI inside a residential energy monitoring app.
@@ -295,7 +295,7 @@ Include these 5 sections:
 Tone: warm, friendly, encouraging — like a helpful neighbour.
     `.trim(),
 
-    // ── PROMPT 6: Free Chat (custom question) ───────────────
+    // ── PROMPT 7: Free Chat (custom question) ───────────────
     chat: `
 Here is the household energy data in JSON:
 ${data}
@@ -323,8 +323,8 @@ const router = express.Router();
 
 // Your existing MongoDB models — Paths fixed for root location
 const EnergyLog = require("./models/EnergyLog");
-// const BillRecord = require("./models/BillRecord"); // Placeholder/Missing
-// const SolarData = require("./models/SolarData");   // Placeholder/Missing
+const BillRecord = require("./models/BillRecord");
+const SolarData = require("./models/SolarData");
 
 const DAY = 86400000;
 
@@ -406,7 +406,7 @@ router.post("/chat", async (req, res) => {
       "{{USER_QUESTION}}", question
     );
     const response = await client.messages.create({
-      model: "claude-3-5-sonnet-20240620",
+      model: "claude-opus-4-6",
       max_tokens: 1000,
       system: "You are a home energy analyst. Answer using only the data provided. Be concise and friendly.",
       messages: [{ role: "user", content: prompt }],
