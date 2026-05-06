@@ -1,5 +1,5 @@
 /**
- * Neural Chatbot Intelligence - Context Aware
+ * AI Chatbot Logic - Final Repair
  */
 
 export const initChatbot = (state) => {
@@ -15,41 +15,25 @@ export const initChatbot = (state) => {
     }
 };
 
-const handleChat = (query, state) => {
+const handleChat = async (query, state) => {
     appendMsg(query, 'user');
     showTyping();
 
-    setTimeout(() => {
+    try {
+        // Real Backend Sync
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, stateContext: state })
+        });
+        const data = await res.json();
+        
         removeTyping();
-        const response = generateNeuralResponse(query, state);
-        appendMsg(response, 'ai');
-    }, 1200);
-};
-
-const generateNeuralResponse = (query, state) => {
-    const q = query.toLowerCase();
-    const active = state.devices.filter(d => d.status === 'Active' || d.status === 'ON');
-    const totalLoad = active.reduce((sum, d) => sum + (d.watts / 1000), 0);
-    const bill = state.metrics.bill;
-
-    if (q.includes('bill') || q.includes('cost')) {
-        return `Your current projected bill is ₹${bill}. Based on your slab rate, keeping the AC off for 2 hours daily could save ₹420 this month.`;
+        appendMsg(data.response, 'ai');
+    } catch (e) {
+        removeTyping();
+        appendMsg("Neural grid link timeout. Error code: 504.", 'ai');
     }
-    
-    if (q.includes('power') || q.includes('usage') || q.includes('consuming')) {
-        const top = [...state.devices].sort((a,b) => b.usage - a.usage)[0];
-        return `Current grid load is ${totalLoad.toFixed(2)} kW. The ${top.name} is your highest consumer at ${top.watts} Watts.`;
-    }
-
-    if (q.includes('save') || q.includes('tips')) {
-        return "I recommend shifting your Water Heater usage to early morning (5 AM) and cleaning the refrigerator coils to improve efficiency by 10%.";
-    }
-
-    if (q.includes('predict') || q.includes('forecast')) {
-        return `Predictive models suggest a ${bill > 3000 ? 'high' : 'normal'} usage trend. End-of-month units are projected at ${state.metrics.totalConsumed * 1.2} kWh.`;
-    }
-
-    return "Neural grid nodes are stable. I am monitoring your consumption patterns for any abnormal power spikes.";
 };
 
 const appendMsg = (text, type) => {
@@ -67,7 +51,7 @@ const showTyping = () => {
     const typing = document.createElement('div');
     typing.id = 'typing-indicator';
     typing.className = 'message ai message-typing';
-    typing.innerText = 'Nexus is analyzing grid...';
+    typing.innerText = 'Nexus is analyzing telemetry...';
     chatBox.appendChild(typing);
     chatBox.scrollTop = chatBox.scrollHeight;
 };

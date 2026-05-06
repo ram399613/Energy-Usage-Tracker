@@ -1,5 +1,5 @@
 /**
- * NexGen AI Dashboard - Master Orchestrator
+ * NexGen AI Dashboard - Final Production Repair
  */
 import { initCharts, updateLiveChart, updateDistributionChart, updatePredictChart } from './charts.js';
 import { renderDevices, updateDeviceUI } from './devices.js';
@@ -10,7 +10,7 @@ import { initSettings, showToast } from './utils.js';
 
 const socket = io();
 
-// CENTRALIZED APP STATE
+// MASTER APP STATE
 const appState = {
     devices: [],
     metrics: {
@@ -19,71 +19,100 @@ const appState = {
         bill: 0,
         ecoScore: 94
     },
-    view: 'dashboard'
+    view: 'dashboard',
+    isInitialized: false
 };
 
-// --- INITIALIZATION ---
+// --- SAFE INITIALIZATION SEQUENCE ---
 document.addEventListener('DOMContentLoaded', async () => {
-    initCharts();
-    initChatbot(appState); // Passes state for context-aware chat
-    initSettings(); 
-    
-    await fetchData();
-    
-    // Core Dynamic Loops
-    setInterval(updateClock, 1000);
-    setInterval(fetchData, 15000); // Poll every 15s for stability
+    try {
+        console.log("Initializing Neural Grid...");
+        
+        // 1. Core Systems
+        initSettings();
+        initCharts();
+        initChatbot(appState);
+        
+        // 2. Initial Data Sync
+        await fetchData();
+        
+        // 3. Post-render logic
+        appState.isInitialized = true;
+        document.body.classList.add('ready');
+        
+        // 4. Dynamic Loops
+        setInterval(updateClock, 1000);
+        setInterval(fetchData, 5000); // 5s Real-time polling as requested
+        
+        console.log("Neural Grid Stable.");
+    } catch (err) {
+        console.error("Initialization Failed:", err);
+        showToast("Grid Sync Critical Error", "error");
+    }
 });
 
 async function fetchData() {
     try {
-        const res = await fetch('/api/dashboard');
-        const data = await res.json();
+        // Fetch all endpoints to ensure full state sync
+        const [dashRes, anaRes, billRes] = await Promise.all([
+            fetch('/api/dashboard'),
+            fetch('/api/analytics'),
+            fetch('/api/bill')
+        ]);
         
-        appState.devices = data.devices;
-        appState.metrics = data.metrics;
+        const dashData = await dashRes.json();
+        const anaData = await anaRes.json();
+        const billData = await billRes.json();
         
-        renderUI();
+        // Update State
+        appState.devices = dashData.devices;
+        appState.metrics = dashData.metrics;
+        appState.metrics.bill = billData.bill;
+        
+        renderUI(anaData);
     } catch (err) {
-        showToast('Grid Telemetry Sync Failed', 'error');
+        console.error("Data Fetch Failed:", err);
     }
 }
 
-function renderUI() {
+function renderUI(anaData) {
+    // 1. Devices & Controls
     renderDevices(appState.devices, handleDeviceToggle);
-    updateAnalytics(appState);
+    
+    // 2. Analytics & Counters
+    updateAnalytics(appState, anaData);
+    
+    // 3. Chart Updates (Using .update() - No Recreate)
     updateDistributionChart(appState.devices);
     
-    // Sync AI Suggestions
+    // 4. AI Engine
     const suggestions = analyzeSystem(appState);
     renderSuggestions(suggestions);
 }
 
-// --- DEVICE TOGGLE ---
+// --- ROBUST DEVICE TOGGLE ---
 async function handleDeviceToggle(id, isON) {
     const status = isON ? 'Active' : 'Idle';
     
-    // 1. Optimistic UI
-    const deviceIndex = appState.devices.findIndex(d => d._id === id);
-    if (deviceIndex !== -1) {
-        const dev = appState.devices[deviceIndex];
-        updateDeviceUI(id, isON, isON ? (dev.watts / 1000) : 0);
-    }
+    // Optimistic UI Update
+    updateDeviceUI(id, isON, isON ? 1.0 : 0);
     
     try {
-        await fetch('/api/device/toggle', {
+        const res = await fetch('/api/device/toggle', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ deviceId: id, status })
         });
         
-        // 2. Full Sync
-        fetchData();
-        showToast(`${appState.devices[deviceIndex].name} grid status: ${status}`, 'success');
-        
+        if (res.ok) {
+            await fetchData(); // Full state refresh
+            showToast(`${isON ? 'Activated' : 'Deactivated'} Node`, 'success');
+        } else {
+            throw new Error("Toggle failed on server");
+        }
     } catch (e) {
-        showToast('Neural Link Interrupted', 'error');
-        fetchData();
+        showToast('Node Link Failure', 'error');
+        fetchData(); // Revert UI
     }
 }
 
@@ -92,7 +121,7 @@ function renderSuggestions(tips) {
     if (!container) return;
     container.innerHTML = tips.map(t => `
         <div class="suggestion-card">
-            <i class="fas fa-microchip" style="color:var(--accent-cyan); margin-right:8px;"></i>
+            <i class="fas fa-brain" style="color:var(--accent-cyan); margin-right:8px;"></i>
             ${t}
         </div>
     `).join('');
@@ -103,15 +132,18 @@ function updateClock() {
     if (el) el.querySelector('span').innerText = new Date().toLocaleTimeString();
 }
 
-// Socket Live Monitoring
+// SOCKET.IO LIVE UPDATES
 socket.on('live-update', (data) => {
-    updateLiveChart(data.usage, new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    if (appState.isInitialized) {
+        updateLiveChart(data.usage, new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }
 });
 
-// View Navigation
+// GLOBAL NAVIGATION
 window.showView = (viewId) => {
     document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
-    document.getElementById(`${viewId}-view`).style.display = 'block';
+    const target = document.getElementById(`${viewId}-view`);
+    if (target) target.style.display = 'block';
     
     document.querySelectorAll('.nav-links a').forEach(a => {
         a.classList.remove('active');

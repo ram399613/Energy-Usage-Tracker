@@ -1,5 +1,5 @@
 /**
- * Chart Management System
+ * Chart Management System - Final Repair
  */
 
 const chartInstances = {};
@@ -7,17 +7,20 @@ const chartInstances = {};
 const defaultOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#888', font: { family: 'Outfit' } } } },
+    plugins: { 
+        legend: { labels: { color: '#888', font: { family: 'Outfit' } } } 
+    },
     scales: {
         y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
         x: { grid: { display: false }, ticks: { color: '#666' } }
-    }
+    },
+    animation: { duration: 1000, easing: 'easeInOutQuart' }
 };
 
-export const initCharts = (initialData) => {
-    // 1. Live Chart
-    const liveCtx = document.getElementById('liveChart')?.getContext('2d');
-    if (liveCtx) {
+export const initCharts = () => {
+    // 1. Live Line Chart
+    const liveCtx = document.getElementById('liveChart');
+    if (liveCtx && !chartInstances.live) {
         chartInstances.live = new Chart(liveCtx, {
             type: 'line',
             data: {
@@ -32,13 +35,13 @@ export const initCharts = (initialData) => {
                     pointRadius: 0
                 }]
             },
-            options: { ...defaultOptions, animation: false }
+            options: { ...defaultOptions, animation: false } // No animation for live line
         });
     }
 
-    // 2. Pie Chart
-    const pieCtx = document.getElementById('pieChart')?.getContext('2d');
-    if (pieCtx) {
+    // 2. Distribution Pie Chart
+    const pieCtx = document.getElementById('pieChart');
+    if (pieCtx && !chartInstances.pie) {
         chartInstances.pie = new Chart(pieCtx, {
             type: 'doughnut',
             data: {
@@ -53,15 +56,15 @@ export const initCharts = (initialData) => {
         });
     }
 
-    // 3. Prediction Chart
-    const predCtx = document.getElementById('predictChart')?.getContext('2d');
-    if (predCtx) {
+    // 3. Prediction Bar Chart
+    const predCtx = document.getElementById('predictChart');
+    if (predCtx && !chartInstances.predict) {
         chartInstances.predict = new Chart(predCtx, {
             type: 'bar',
             data: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 datasets: [
-                    { label: 'History', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(112, 0, 255, 0.4)', borderRadius: 5 },
+                    { label: 'History', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(112, 0, 255, 0.3)', borderRadius: 5 },
                     { label: 'Forecast', data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(0, 242, 255, 0.6)', borderRadius: 5 }
                 ]
             },
@@ -77,7 +80,7 @@ export const updateLiveChart = (val, time) => {
     chart.data.datasets[0].data.shift();
     chart.data.labels.push(time);
     chart.data.labels.shift();
-    chart.update('none');
+    chart.update('none'); // Update without full animation for performance
 };
 
 export const updateDistributionChart = (devices) => {
@@ -86,7 +89,7 @@ export const updateDistributionChart = (devices) => {
     const cats = { HVAC: 0, Appliances: 0, Lighting: 0, Electronics: 0 };
     devices.forEach(d => {
         if (d.status === 'Active' || d.status === 'ON') {
-            cats[d.category || 'General'] += d.usage;
+            cats[d.category || 'General'] += (d.watts / 1000);
         }
     });
     chart.data.datasets[0].data = Object.values(cats);
@@ -96,6 +99,7 @@ export const updateDistributionChart = (devices) => {
 export const updatePredictChart = (historical, forecast) => {
     const chart = chartInstances.predict;
     if (!chart) return;
+    chart.data.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     chart.data.datasets[0].data = historical;
     chart.data.datasets[1].data = forecast;
     chart.update();
