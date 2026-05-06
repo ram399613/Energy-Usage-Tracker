@@ -6,9 +6,13 @@ import OverviewCards from './components/OverviewCards';
 import AiAnalytics from './components/AiAnalytics';
 import DeviceMonitoring from './components/DeviceMonitoring';
 import AlertsList from './components/AlertsList';
+import UsageTab from './components/UsageTab';
+import DevicesTab from './components/DevicesTab';
+import ReportsTab from './components/ReportsTab';
+import SettingsTab from './components/SettingsTab';
 import Auth from './components/Auth';
 import { energyService, iotService } from './services/api';
-import { Sparkles, Cloud, Sun, Droplets, Search, Bell, SunDim, Moon } from 'lucide-react';
+import { Sparkles, Cloud, Sun, Search, Bell, SunDim, Moon } from 'lucide-react';
 
 const App = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
@@ -89,6 +93,42 @@ const App = () => {
     setUser(null);
   };
 
+  const renderTabContent = () => {
+    switch(activeTab) {
+      case 'overview':
+        return (
+          <>
+            <OverviewCards stats={stats} />
+            <AiAnalytics 
+              history={energyData} 
+              aiInsights={aiInsights} 
+              onRefresh={fetchAiInsights}
+            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <DeviceMonitoring />
+              <AlertsList />
+            </div>
+          </>
+        );
+      case 'usage':
+        return <UsageTab history={energyData} />;
+      case 'devices':
+        return <DevicesTab />;
+      case 'reports':
+        return <ReportsTab />;
+      case 'alerts':
+        return (
+          <div className="max-w-3xl mx-auto">
+            <AlertsList />
+          </div>
+        );
+      case 'settings':
+        return <SettingsTab isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} user={user} />;
+      default:
+        return <OverviewCards stats={stats} />;
+    }
+  };
+
   if (!user) return <Auth onLogin={setUser} />;
 
   return (
@@ -153,43 +193,15 @@ const App = () => {
 
         {/* Dashboard Content */}
         <AnimatePresence mode="wait">
-          {activeTab === 'overview' && (
-            <motion.div
-              key="overview"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <OverviewCards stats={stats} />
-              
-              <AiAnalytics 
-                history={energyData} 
-                aiInsights={aiInsights} 
-                onRefresh={fetchAiInsights}
-              />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <DeviceMonitoring />
-                <AlertsList />
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab !== 'overview' && (
-            <motion.div
-              key="others"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center h-[60vh] glass rounded-[3rem]"
-            >
-              <div className="bg-eco-100 p-6 rounded-[2rem] text-eco-600 mb-6 animate-bounce">
-                <Sparkles size={48} />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800">Section Coming Soon</h3>
-              <p className="text-slate-500 mt-2">We are working on bringing AI insights to this section.</p>
-            </motion.div>
-          )}
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {renderTabContent()}
+          </motion.div>
         </AnimatePresence>
 
         {/* Footer Info */}
