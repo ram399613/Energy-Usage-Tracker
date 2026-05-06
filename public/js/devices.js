@@ -1,70 +1,58 @@
 /**
- * Smart Neural Node Management (Devices)
+ * Smart Device Rendering - Neural Logic
  */
-import { showToast } from './utils.js';
 
 export const renderDevices = (devices, onToggle) => {
     const container = document.getElementById('device-container');
     if (!container) return;
-
-    const fragment = document.createDocumentFragment();
     
-    devices.forEach(device => {
+    container.innerHTML = devices.map(device => {
         const isActive = device.status === 'Active' || device.status === 'ON';
-        const card = document.createElement('div');
-        card.className = `device-card ${isActive ? 'active' : ''}`;
-        card.id = `dev-${device._id}`;
+        const usagePercent = Math.min((device.usage / 2.5) * 100, 100); // Scale 2.5kW as 100%
         
-        card.innerHTML = `
-            <div style="position: absolute; top: 24px; right: 24px;">
-                <label class="switch">
-                    <input type="checkbox" ${isActive ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="device-icon"><i class="fas ${getIcon(device.name)}"></i></div>
-            <h4>${device.name}</h4>
-            <div class="usage-text">${isActive ? `⚡ Active: ${device.usage} kW` : '💤 Node Idle'}</div>
-            <div style="width: 100%; height: 2px; background: rgba(255,255,255,0.05); border-radius: 1px;">
-                <div style="width: ${isActive ? Math.min((device.usage / 2 * 100), 100) : 0}%; height: 100%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); transition: 1s ease;"></div>
+        return `
+            <div class="device-card ${isActive ? 'active' : ''}" data-id="${device._id}">
+                <div class="device-header">
+                    <div class="device-icon">
+                        <i class="fas ${device.icon}"></i>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" ${isActive ? 'checked' : ''} onchange="window.handleToggle('${device._id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="device-info">
+                    <h4>${device.name}</h4>
+                    <p class="usage-text">${isActive ? device.usage.toFixed(2) : '0.00'} kW | ${device.efficiency}</p>
+                </div>
+                <div class="usage-progress">
+                    <div class="progress-fill" style="width: ${isActive ? usagePercent : 0}%"></div>
+                </div>
+                <div style="font-size: 10px; color: var(--text-dim); display: flex; justify-content: space-between;">
+                    <span>Rating: ${device.watts}W</span>
+                    <span>Health: ${device.health}%</span>
+                </div>
             </div>
         `;
-        
-        card.querySelector('input').onchange = (e) => onToggle(device._id, e.target.checked);
-        fragment.appendChild(card);
-    });
+    }).join('');
 
-    container.innerHTML = '';
-    container.appendChild(fragment);
+    // Attach global handler
+    window.handleToggle = onToggle;
 };
 
 export const updateDeviceUI = (id, isON, usage) => {
-    const card = document.getElementById(`dev-${id}`);
+    const card = document.querySelector(`.device-card[data-id="${id}"]`);
     if (!card) return;
     
-    card.classList.toggle('active', isON);
-    const usageText = card.querySelector('.usage-text');
-    const bar = card.querySelector('div[style*="height: 100%"]');
+    if (isON) card.classList.add('active');
+    else card.classList.remove('active');
     
-    if (isON) {
-        usageText.innerText = `⚡ Active: ${usage} kW`;
-        if (bar) bar.style.width = `${Math.min((usage / 2 * 100), 100)}%`;
-    } else {
-        usageText.innerText = '💤 Node Idle';
-        if (bar) bar.style.width = '0%';
+    const usageText = card.querySelector('.usage-text');
+    if (usageText) usageText.innerText = `${isON ? usage.toFixed(2) : '0.00'} kW | ${isON ? 'Optimal' : 'Idle'}`;
+    
+    const progress = card.querySelector('.progress-fill');
+    if (progress) {
+        const usagePercent = Math.min((usage / 2.5) * 100, 100);
+        progress.style.width = `${isON ? usagePercent : 0}%`;
     }
 };
-
-function getIcon(name) {
-    const n = name.toLowerCase();
-    if (n.includes('ac') || n.includes('conditioner')) return 'fa-snowflake';
-    if (n.includes('fan')) return 'fa-fan';
-    if (n.includes('tv') || n.includes('television')) return 'fa-tv';
-    if (n.includes('refrigerator') || n.includes('fridge')) return 'fa-refrigerator';
-    if (n.includes('washing')) return 'fa-soap';
-    if (n.includes('light')) return 'fa-lightbulb';
-    if (n.includes('laptop') || n.includes('computer')) return 'fa-laptop';
-    if (n.includes('heater')) return 'fa-fire';
-    if (n.includes('solar')) return 'fa-solar-panel';
-    return 'fa-microchip';
-}
