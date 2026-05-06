@@ -5,6 +5,23 @@
 export const initChatbot = (state) => {
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-chat');
+    const aiPanel = document.getElementById('ai-panel');
+    const toggleBtn = document.getElementById('ai-toggle-btn');
+    const closeBtn = document.getElementById('close-ai');
+
+    if (toggleBtn && aiPanel) {
+        toggleBtn.onclick = () => {
+            aiPanel.classList.remove('hidden');
+            toggleBtn.style.display = 'none';
+        };
+    }
+
+    if (closeBtn && aiPanel) {
+        closeBtn.onclick = () => {
+            aiPanel.classList.add('hidden');
+            if (toggleBtn) toggleBtn.style.display = 'flex';
+        };
+    }
 
     if (sendBtn) {
         sendBtn.onclick = () => {
@@ -14,6 +31,7 @@ export const initChatbot = (state) => {
         };
     }
 };
+
 
 const handleChat = async (query, state) => {
     appendMsg(query, 'user');
