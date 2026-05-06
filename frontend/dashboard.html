@@ -23,6 +23,12 @@
                     <span>NexGen <span>AI</span></span>
                 </div>
             </div>
+            <div style="padding: 0 20px 20px;">
+                <div class="input-group" style="margin: 0;">
+                    <i class="fas fa-search" style="font-size: 12px;"></i>
+                    <input type="text" placeholder="Search system..." id="sidebar-search" style="padding: 10px 10px 10px 35px; font-size: 12px; border-radius: 10px;">
+                </div>
+            </div>
             <nav class="nav-menu">
                 <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
@@ -89,11 +95,15 @@
                     </div>
                     <div class="card glass animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
                         <div class="c-header"><i class="fas fa-leaf yellow"></i> <span>Eco Score</span></div>
-                        <div class="c-body">
-                            <h2 class="counter" data-target="94">0</h2>
-                            <span class="unit">%</span>
+                        <div class="c-body" style="justify-content: center; padding-top: 10px;">
+                            <div class="eco-circle">
+                                <svg width="80" height="80">
+                                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="none" />
+                                    <circle class="eco-progress" cx="40" cy="40" r="35" stroke="var(--yellow)" stroke-width="8" fill="none" stroke-dasharray="220" stroke-dashoffset="13" stroke-linecap="round" style="transition: 1s;" />
+                                </svg>
+                                <div class="eco-val"><h2 class="counter" data-target="94">0</h2><span>%</span></div>
+                            </div>
                         </div>
-                        <div class="sparkline" id="spark4"></div>
                     </div>
                 </div>
 

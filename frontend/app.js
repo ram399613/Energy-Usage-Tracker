@@ -76,6 +76,16 @@ function initDashboard() {
 // --- Analytics Page Logic ---
 function initAnalyticsPage() {
     NexGenState.charts = initCharts();
+    
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+        exportBtn.onclick = () => {
+            showToast("Exporting", "Preparing high-fidelity neural report (PDF)...", "info");
+            setTimeout(() => {
+                showToast("Success", "Report downloaded successfully.", "success");
+            }, 2000);
+        };
+    }
 }
 
 // --- Devices Page Logic ---
@@ -184,6 +194,7 @@ function startLiveSimulation() {
 function updateLiveUI() {
     const usageEl = document.querySelector('[data-target="2.84"]');
     const totalEl = document.querySelector('[data-target="152.4"]');
+    const ecoCircle = document.querySelector('.eco-progress');
     
     if (usageEl) usageEl.innerText = NexGenState.currentUsage.toFixed(2);
     if (totalEl) totalEl.innerText = NexGenState.totalConsumed.toFixed(1);
@@ -193,6 +204,13 @@ function updateLiveUI() {
     if (billEl) {
         NexGenState.monthlyBill = NexGenState.totalConsumed * 8.5; // Example rate
         billEl.innerText = Math.floor(NexGenState.monthlyBill);
+    }
+
+    // Update Eco Circle
+    if (ecoCircle) {
+        const score = NexGenState.ecoScore;
+        const offset = 220 - (220 * score / 100);
+        ecoCircle.style.strokeDashoffset = offset;
     }
 }
 
@@ -394,6 +412,19 @@ function initNotifications() {
         mobToggle.onclick = () => {
             sidebar.classList.toggle('active');
             mobToggle.innerHTML = sidebar.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        };
+    }
+
+    // Sidebar Search Filter
+    const searchInput = document.getElementById('sidebar-search');
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    if (searchInput) {
+        searchInput.oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            navLinks.forEach(link => {
+                const text = link.innerText.toLowerCase();
+                link.style.display = text.includes(term) ? 'flex' : 'none';
+            });
         };
     }
 }
