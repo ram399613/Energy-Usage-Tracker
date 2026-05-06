@@ -14,14 +14,19 @@ exports.getDashboardData = async (req, res) => {
   try {
     const devices = await Device.find();
     const activeDevices = devices.filter(d => d.status === 'Active' || d.status === 'ON');
-    const totalLoad = activeDevices.reduce((sum, d) => sum + (d.watts / 1000), 0);
-    const energyLogs = await Energy.find().sort({ timestamp: -1 }).limit(100);
+    
+    // Instantaneous Load (kW)
+    const currentLoad = activeDevices.reduce((sum, d) => sum + (d.watts / 1000), 0).toFixed(2);
+    
+    // Total Consumption from logs (kWh)
+    const energyLogs = await Energy.find();
     const totalConsumed = energyLogs.reduce((sum, log) => sum + log.units, 0).toFixed(2);
     const bill = calculateBill(totalConsumed);
 
     res.json({
       devices,
       metrics: {
+        currentLoad,
         totalConsumed,
         activeDevices: activeDevices.length,
         bill,

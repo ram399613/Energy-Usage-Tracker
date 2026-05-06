@@ -8,9 +8,9 @@ export const updateAnalytics = (state, anaData) => {
     const billEl = document.getElementById('est-bill');
     const ecoEl = document.getElementById('eco-score');
 
-    if (totalEl) totalEl.innerText = `${state.metrics.totalConsumed} kW`;
+    if (totalEl) totalEl.innerText = `${state.metrics.currentLoad || 0.00} kW`;
     if (carbonEl) carbonEl.innerText = `${(state.metrics.totalConsumed * 0.82).toFixed(2)} kg`;
-    if (billEl) billEl.innerText = `₹${state.metrics.bill}`;
+    if (billEl) billEl.innerText = `₹${state.metrics.bill || 0}`;
     if (ecoEl) ecoEl.innerText = `${state.metrics.ecoScore}%`;
 
     // 2. Intelligence View Metrics
