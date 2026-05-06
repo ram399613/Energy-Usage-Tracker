@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Device = require('./models/Device');
-const Energy = require('./models/Energy');
 require('dotenv').config();
 
 const devices = [

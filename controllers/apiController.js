@@ -1,6 +1,5 @@
 const Device = require('../models/Device');
 const Energy = require('../models/Energy');
-const UsageLog = require('../models/UsageLog');
 
 // Slab rates for bill calculation
 const calculateBill = (units) => {
