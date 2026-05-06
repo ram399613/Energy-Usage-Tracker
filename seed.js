@@ -10,6 +10,10 @@ const devices = [
   { name: 'Washing Machine', icon: 'fa-soap', watts: 500, category: 'Appliances', efficiency: '90%', usage: 0, status: 'Idle' },
   { name: 'Gaming PC', icon: 'fa-laptop', watts: 450, category: 'Electronics', efficiency: '96%', usage: 0, status: 'Idle' },
   { name: 'Water Heater', icon: 'fa-fire', watts: 2000, category: 'HVAC', efficiency: '88%', usage: 0, status: 'Idle' },
+  { name: 'EV Charger', icon: 'fa-car-side', watts: 7000, category: 'Transportation', efficiency: '97%', usage: 0, status: 'Idle' },
+  { name: 'Smart Dishwasher', icon: 'fa-sink', watts: 1200, category: 'Appliances', efficiency: '93%', usage: 0, status: 'Idle' },
+  { name: 'Microwave Oven', icon: 'fa-microchip', watts: 1000, category: 'Appliances', efficiency: '91%', usage: 0, status: 'Idle' },
+  { name: 'Neural Lighting', icon: 'fa-lightbulb', watts: 200, category: 'Lighting', efficiency: '99%', usage: 0, status: 'Idle' },
   { name: 'Solar Panel Array', icon: 'fa-solar-panel', watts: 0, category: 'Generation', efficiency: '99%', usage: 0, status: 'Active' },
   { name: 'Smart Meter Pro', icon: 'fa-gauge-high', watts: 10, category: 'Monitoring', efficiency: '100%', usage: 0, status: 'Active' }
 ];
