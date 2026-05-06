@@ -31,6 +31,30 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // --- New API Routes for AI Project ---
 
+// GET /api/dashboard - Consolidated state
+app.get('/api/dashboard', async (req, res) => {
+  try {
+    const devices = await Device.find();
+    const activeUsage = devices.reduce((sum, d) => sum + (d.status === 'Active' ? d.usage : 0), 0);
+    
+    // Mocking accumulation for total consumption
+    const totalConsumed = 152.4 + (activeUsage * 0.1); 
+    
+    res.json({
+      devices,
+      metrics: {
+        currentUsage: activeUsage.toFixed(2),
+        totalConsumed: totalConsumed.toFixed(1),
+        bill: (totalConsumed * 8.0).toFixed(0),
+        carbon: (totalConsumed * 0.82).toFixed(1),
+        ecoScore: 94
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/energy/live - Live status
 app.get('/api/energy/live', (req, res) => {
   res.json({ usage: (Math.random() * 5).toFixed(2), timestamp: new Date() });

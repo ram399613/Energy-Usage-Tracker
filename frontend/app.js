@@ -34,12 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- Dashboard Logic ---
-function initDashboard() {
+async function initDashboard() {
     NexGenState.charts = initCharts();
     initCounters();
     initAIEngine();
     loadTips();
-    startLiveSimulation();
+    
+    // Initial data fetch
+    await fetchDashboardData();
+    startLivePolling();
     
     if (NexGenState.charts.main) {
         initManualEntry(NexGenState.charts.main);
@@ -56,15 +59,6 @@ function initDashboard() {
         };
     }
 
-    // Interaction for "View Suggestions"
-    const viewSugBtn = document.querySelector('.tips-card h3');
-    if (viewSugBtn) {
-        viewSugBtn.style.cursor = 'pointer';
-        viewSugBtn.onclick = () => {
-            showToast("AI Insight", "Loading deep behavioral analysis...", "info");
-            setTimeout(loadTips, 1000);
-        };
-    }
     const upgradeBtn = document.getElementById('upgrade-btn');
     if (upgradeBtn) {
         upgradeBtn.onclick = () => {
@@ -127,7 +121,11 @@ async function toggleDevice(id, currentStatus) {
         });
         if (res.ok) {
             showToast("Device Updated", `System is now ${newStatus.toLowerCase()}.`, "success");
-            renderDevices(); // Re-render
+            renderDevices();
+            // If we are on dashboard, sync immediately
+            if (document.body.classList.contains('dashboard-page')) {
+                await fetchDashboardData();
+            }
         }
     } catch (err) {
         showToast("Error", "Could not sync with hardware.", "warning");
@@ -144,7 +142,7 @@ function initCharts() {
     if (isDashboard) {
         const options = {
             series: [{ name: 'Power (kW)', data: [1.2, 1.8, 1.5, 2.4, 2.8, 2.2, 3.1, 2.9, 3.5, 3.2, 2.8, 2.4] }],
-            chart: { type: 'area', height: 350, toolbar: { show: false }, animations: { enabled: true, easing: 'linear', dynamicAnimation: { speed: 1000 } } },
+            chart: { type: 'area', height: 350, toolbar: { show: false }, animations: { enabled: true, easing: 'linear', dynamicAnimation: { speed: 800 } } },
             stroke: { curve: 'smooth', width: 3, colors: ['#00f2ff'] },
             fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
             xaxis: { categories: ['12am', '2am', '4am', '6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'], labels: { style: { colors: '#94a3b8' } } },
@@ -172,7 +170,6 @@ function initCharts() {
         predChart.render();
     }
 
-    // Heatmap and Trends (Analytics Page)
     const isHeatmap = document.getElementById('heatmap-chart');
     const isTrends = document.getElementById('trends-chart');
 
@@ -198,7 +195,6 @@ function initCharts() {
         }).render();
     }
 
-    // Common Sparklines
     const spark = (id, data, color) => {
         const el = document.querySelector(id);
         if (el) {
@@ -217,19 +213,38 @@ function initCharts() {
     return { main: mainChart, prediction: predChart };
 }
 
-// --- Live Telemetry Simulation ---
-function startLiveSimulation() {
-    setInterval(() => {
-        if (!NexGenState.isLive) return;
-
-        // Fluctuating usage
-        const delta = (Math.random() - 0.5) * 0.2;
-        NexGenState.currentUsage = Math.max(0.5, NexGenState.currentUsage + delta);
-        NexGenState.totalConsumed += (NexGenState.currentUsage / 720); // Simulating accumulation
+// --- Data Synchronization ---
+async function fetchDashboardData() {
+    try {
+        const res = await fetch('/api/dashboard');
+        const data = await res.json();
+        
+        NexGenState.currentUsage = parseFloat(data.metrics.currentUsage);
+        NexGenState.totalConsumed = parseFloat(data.metrics.totalConsumed);
+        NexGenState.monthlyBill = parseFloat(data.metrics.bill);
+        NexGenState.carbonFootprint = parseFloat(data.metrics.carbon);
+        NexGenState.ecoScore = data.metrics.ecoScore;
         
         updateLiveUI();
         updateMainChart();
-    }, 5000);
+    } catch (err) {
+        console.error("Dashboard sync failed", err);
+    }
+}
+
+function startLivePolling() {
+    setInterval(() => {
+        if (NexGenState.isLive) {
+            // Add a small jitter to the live usage for "aliveness"
+            const jitter = (Math.random() - 0.5) * 0.1;
+            NexGenState.currentUsage = Math.max(0, NexGenState.currentUsage + jitter);
+            updateLiveUI();
+            updateMainChart();
+            
+            // Poll full state every 15 seconds
+            if (Math.random() > 0.8) fetchDashboardData();
+        }
+    }, 4000);
 }
 
 function updateLiveUI() {
@@ -241,23 +256,11 @@ function updateLiveUI() {
     
     if (usageEl) usageEl.innerText = NexGenState.currentUsage.toFixed(2);
     if (totalEl) totalEl.innerText = NexGenState.totalConsumed.toFixed(1);
+    if (billEl) billEl.innerText = Math.floor(NexGenState.monthlyBill);
+    if (carbonEl) carbonEl.innerText = NexGenState.carbonFootprint.toFixed(1);
 
-    // Bill Prediction: Total kWh * ₹8 (Rate from prompt)
-    if (billEl) {
-        NexGenState.monthlyBill = NexGenState.totalConsumed * 8.0; 
-        billEl.innerText = Math.floor(NexGenState.monthlyBill);
-    }
-
-    // Carbon Impact: kWh * 0.82 (Formula from prompt)
-    if (carbonEl) {
-        NexGenState.carbonFootprint = NexGenState.totalConsumed * 0.82;
-        carbonEl.innerText = NexGenState.carbonFootprint.toFixed(1);
-    }
-
-    // Update Eco Circle
     if (ecoCircle) {
-        const score = NexGenState.ecoScore;
-        const offset = 220 - (220 * score / 100);
+        const offset = 220 - (220 * NexGenState.ecoScore / 100);
         ecoCircle.style.strokeDashoffset = offset;
     }
 }
@@ -285,22 +288,16 @@ function initAIEngine() {
                 if (p >= 100) {
                     clearInterval(cycle);
                     
-                    // Dynamic Context-Aware Suggestions
                     let dynamicMsg = "Analyzing household usage patterns...";
-                    if (NexGenState.currentUsage > 3.5) {
+                    if (NexGenState.currentUsage > 3.0) {
                         dynamicMsg = "High power surge detected! AC usage is peak. Switch to 24°C.";
-                        showToast("High Usage", "Consider optimizing AC temperature.", "warning");
+                        showToast("High Usage", "Multiple devices active. Optimize loads.", "warning");
                     } else if (new Date().getHours() > 8 && new Date().getHours() < 17) {
                         dynamicMsg = "Natural daylight available. Consider switching off balcony lights.";
-                    } else if (NexGenState.currentUsage < 1.0) {
-                        dynamicMsg = "Excellent! You are in Eco-Zone. Vampire loads are minimized.";
+                    } else if (NexGenState.currentUsage < 0.5) {
+                        dynamicMsg = "Excellent! Grid is in Eco-Zone. Vampire loads minimized.";
                     } else {
-                        const tasks = [
-                            "Optimizing AC schedule for off-peak hours...",
-                            "Scanning for vampire power leaks...",
-                            "Predicting next month's energy velocity...",
-                            "Calculating carbon offset from solar grid..."
-                        ];
+                        const tasks = ["Optimizing AC schedule...", "Scanning for power leaks...", "Forecasting energy velocity..."];
                         dynamicMsg = tasks[Math.floor(Math.random() * tasks.length)];
                     }
 
@@ -315,7 +312,7 @@ function initAIEngine() {
                 }
             }, 50);
         }
-    }, 10000);
+    }, 12000);
 }
 
 // --- Smooth Counters ---
@@ -339,39 +336,23 @@ function initCounters() {
     });
 }
 
-// --- Saving Tips Carousel ---
 function loadTips() {
     const container = document.getElementById('tips-carousel');
     if (!container) return;
-
     const tips = [
         { icon: 'fas fa-temperature-low', text: 'Set AC to 25°C to save ₹120 this month.' },
         { icon: 'fas fa-power-off', text: 'Unplug devices in Guest Room to stop vampire load.' },
-        { icon: 'fas fa-lightbulb', text: 'Switch to LED bulbs in Balcony for 15% efficiency gain.' },
-        { icon: 'fas fa-clock', text: 'Shift washing machine use to non-peak hours (10PM-6AM).' }
+        { icon: 'fas fa-lightbulb', text: 'Switch to LED bulbs for 15% efficiency gain.' },
+        { icon: 'fas fa-clock', text: 'Shift washing machine use to non-peak hours.' }
     ];
-
-    // Shuffle tips for dynamic feel
     const shuffled = tips.sort(() => 0.5 - Math.random());
-
-    container.innerHTML = shuffled.map(t => `
-        <div class="tip-item animate__animated animate__fadeInUp">
-            <i class="${t.icon}"></i>
-            <span>${t.text}</span>
-        </div>
-    `).join('');
+    container.innerHTML = shuffled.map(t => `<div class="tip-item animate__animated animate__fadeInUp"><i class="${t.icon}"></i><span>${t.text}</span></div>`).join('');
 }
 
-// --- Theme Toggle ---
 function initTheme() {
     const btn = document.getElementById('theme-toggle');
     const savedTheme = localStorage.getItem('theme');
-    
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-
+    if (savedTheme === 'light') { document.body.classList.add('light-theme'); if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>'; }
     if (btn) {
         btn.onclick = () => {
             document.body.classList.toggle('light-theme');
@@ -383,33 +364,20 @@ function initTheme() {
     }
 }
 
-// --- Manual Entry ---
 function initManualEntry(chart) {
     const modal = document.getElementById('manual-modal');
     const openBtn = document.getElementById('open-manual-btn');
     const closeBtn = document.getElementById('close-modal');
     const saveBtn = document.getElementById('save-manual-btn');
-
     if (openBtn) openBtn.onclick = () => modal.classList.add('active');
     if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
-
     if (saveBtn) {
         saveBtn.onclick = () => {
             const val = parseFloat(document.getElementById('m-usage').value);
-            if (!val || val <= 0) {
-                showToast("Error", "Please enter a valid power value.", "warning");
-                return;
-            }
-
-            // Add to chart
-            const newData = [...chart.w.config.series[0].data, val];
-            if (newData.length > 12) newData.shift();
-            chart.updateSeries([{ data: newData }]);
-
-            // Update state
+            if (!val || val <= 0) return;
             NexGenState.currentUsage = val;
             updateLiveUI();
-
+            updateMainChart();
             showToast("Success", `Data point ${val} kW synced with AI engine.`, "success");
             modal.classList.remove('active');
             document.getElementById('m-usage').value = '';
@@ -419,13 +387,7 @@ function initManualEntry(chart) {
 
 function initNotifications() {
     const bell = document.querySelector('.icon-btn');
-    if (bell) {
-        bell.onclick = () => {
-            showToast("Notifications", "You have 2 new AI recommendations.", "info");
-        };
-    }
-
-    // Mobile Toggle
+    if (bell) bell.onclick = () => showToast("Notifications", "You have 2 new AI recommendations.", "info");
     const mobToggle = document.getElementById('mobile-toggle');
     const sidebar = document.querySelector('.sidebar');
     if (mobToggle && sidebar) {
@@ -434,8 +396,6 @@ function initNotifications() {
             mobToggle.innerHTML = sidebar.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         };
     }
-
-    // Sidebar Search Filter
     const searchInput = document.getElementById('sidebar-search');
     const navLinks = document.querySelectorAll('.nav-menu a');
     if (searchInput) {
@@ -453,28 +413,9 @@ function showToast(title, msg, type) {
     const area = document.body;
     const toast = document.createElement('div');
     toast.className = `toast glass ${type} animate__animated animate__fadeInRight`;
-    toast.style.cssText = `
-        position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-        padding: 16px; min-width: 320px; display: flex; gap: 15px;
-        box-shadow: 0 10px 50px rgba(0,0,0,0.4);
-    `;
-    
+    toast.style.cssText = `position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 16px; min-width: 320px; display: flex; gap: 15px; box-shadow: 0 10px 50px rgba(0,0,0,0.4);`;
     const icon = type === 'warning' ? 'fa-exclamation-triangle' : (type === 'success' ? 'fa-check-circle' : 'fa-info-circle');
-    
-    toast.innerHTML = `
-        <i class="fas ${icon}" style="font-size: 24px;"></i>
-        <div style="flex: 1;">
-            <strong style="display: block; margin-bottom: 4px;">${title}</strong>
-            <p style="font-size: 13px; opacity: 0.8; margin: 0;">${msg}</p>
-        </div>
-        <i class="fas fa-times" style="cursor: pointer; font-size: 14px; opacity: 0.5;" onclick="this.parentElement.remove()"></i>
-    `;
+    toast.innerHTML = `<i class="fas ${icon}" style="font-size: 24px;"></i><div style="flex: 1;"><strong style="display: block; margin-bottom: 4px;">${title}</strong><p style="font-size: 13px; opacity: 0.8; margin: 0;">${msg}</p></div><i class="fas fa-times" style="cursor: pointer; font-size: 14px; opacity: 0.5;" onclick="this.parentElement.remove()"></i>`;
     area.appendChild(toast);
-    
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
-            setTimeout(() => toast.remove(), 800);
-        }
-    }, 5000);
+    setTimeout(() => { if (toast.parentElement) { toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight'); setTimeout(() => toast.remove(), 800); } }, 5000);
 }
