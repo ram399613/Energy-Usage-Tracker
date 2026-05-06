@@ -5,6 +5,8 @@ const connectDB = require('./config/db');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
+const Device = require('./models/Device');
+const Energy = require('./models/Energy');
 
 // Load env vars
 dotenv.config();
@@ -34,28 +36,33 @@ app.get('/api/energy/live', (req, res) => {
   res.json({ usage: (Math.random() * 5).toFixed(2), timestamp: new Date() });
 });
 
-// GET /api/energy/history - Usage history
-app.get('/api/energy/history', (req, res) => {
-  res.json([
-    { date: '2026-05-01', kwh: 12 },
-    { date: '2026-05-02', kwh: 15 },
-    { date: '2026-05-03', kwh: 14 }
-  ]);
+// GET /api/devices - Device list from DB
+app.get('/api/devices', async (req, res) => {
+  try {
+    const devices = await Device.find();
+    res.json(devices);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// GET /api/devices - Device list
-app.get('/api/devices', (req, res) => {
-  res.json([
-    { name: 'AC', usage: 1.2, status: 'Active' },
-    { name: 'Fridge', usage: 0.2, status: 'Active' },
-    { name: 'Lighting', usage: 0.1, status: 'Active' }
-  ]);
+// POST /api/device/toggle - Toggle device status in DB
+app.post('/api/device/toggle', async (req, res) => {
+  try {
+    const { deviceId, status } = req.body;
+    const usage = status === 'Active' ? (Math.random() * 1.5 + 0.1).toFixed(2) : 0;
+    const device = await Device.findByIdAndUpdate(deviceId, { status, usage }, { new: true });
+    res.json(device);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// POST /api/device/update - Toggle device
-app.post('/api/device/update', (req, res) => {
+// POST /api/device/update - For legacy compatibility
+app.post('/api/device/update', async (req, res) => {
   const { device, status } = req.body;
-  res.json({ message: `${device} is now ${status}`, timestamp: new Date() });
+  await Device.findOneAndUpdate({ name: device }, { status });
+  res.json({ message: `${device} is now ${status}` });
 });
 
 // GET /api/predictions - Get AI forecast

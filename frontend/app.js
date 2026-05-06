@@ -90,7 +90,48 @@ function initAnalyticsPage() {
 
 // --- Devices Page Logic ---
 function initDevicesPage() {
-    initDeviceControls();
+    renderDevices();
+}
+
+async function renderDevices() {
+    const container = document.querySelector('.device-grid');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/devices');
+        const devices = await res.json();
+
+        container.innerHTML = devices.map(d => `
+            <div class="glass device-card ${d.status.toLowerCase()}" data-id="${d._id}">
+                <div class="dc-top">
+                    <i class="fas ${d.icon}"></i>
+                    <div class="dc-status"><span>${d.status}</span><div class="dot ${d.status === 'Idle' ? 'gray' : ''}"></div></div>
+                </div>
+                <h3>${d.name}</h3>
+                <div class="dc-info"><span>Usage: ${d.usage} kW</span><span>Efficiency: ${d.efficiency}</span></div>
+                <button class="toggle-btn" onclick="toggleDevice('${d._id}', '${d.status}')">${d.status === 'Active' ? 'Turn Off' : 'Turn On'}</button>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error("Failed to load devices", err);
+    }
+}
+
+async function toggleDevice(id, currentStatus) {
+    const newStatus = currentStatus === 'Active' ? 'Idle' : 'Active';
+    try {
+        const res = await fetch('/api/device/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceId: id, status: newStatus })
+        });
+        if (res.ok) {
+            showToast("Device Updated", `System is now ${newStatus.toLowerCase()}.`, "success");
+            renderDevices(); // Re-render
+        }
+    } catch (err) {
+        showToast("Error", "Could not sync with hardware.", "warning");
+    }
 }
 
 // --- Charts Logic (ApexCharts) ---
@@ -194,16 +235,23 @@ function startLiveSimulation() {
 function updateLiveUI() {
     const usageEl = document.querySelector('[data-target="2.84"]');
     const totalEl = document.querySelector('[data-target="152.4"]');
+    const billEl = document.querySelector('[data-target="2450"]');
+    const carbonEl = document.querySelector('.carbon-card h1');
     const ecoCircle = document.querySelector('.eco-progress');
     
     if (usageEl) usageEl.innerText = NexGenState.currentUsage.toFixed(2);
     if (totalEl) totalEl.innerText = NexGenState.totalConsumed.toFixed(1);
 
-    // AI Prediction logic
-    const billEl = document.querySelector('[data-target="2450"]');
+    // Bill Prediction: Total kWh * ₹8 (Rate from prompt)
     if (billEl) {
-        NexGenState.monthlyBill = NexGenState.totalConsumed * 8.5; // Example rate
+        NexGenState.monthlyBill = NexGenState.totalConsumed * 8.0; 
         billEl.innerText = Math.floor(NexGenState.monthlyBill);
+    }
+
+    // Carbon Impact: kWh * 0.82 (Formula from prompt)
+    if (carbonEl) {
+        NexGenState.carbonFootprint = NexGenState.totalConsumed * 0.82;
+        carbonEl.innerText = NexGenState.carbonFootprint.toFixed(1);
     }
 
     // Update Eco Circle
@@ -227,16 +275,7 @@ function updateMainChart() {
 function initAIEngine() {
     const prog = document.getElementById('ai-prog');
     const msg = document.getElementById('ai-msg');
-    const tasks = [
-        "Analyzing household usage patterns...",
-        "Detecting energy spikes in Kitchen...",
-        "Optimizing AC schedule for off-peak hours...",
-        "Calculating carbon offset from solar grid...",
-        "Predicting next month's energy velocity...",
-        "Scanning for vampire power leaks..."
-    ];
-
-    let i = 0;
+    
     setInterval(() => {
         if (prog) {
             let p = 0;
@@ -245,24 +284,38 @@ function initAIEngine() {
                 prog.style.width = p + '%';
                 if (p >= 100) {
                     clearInterval(cycle);
+                    
+                    // Dynamic Context-Aware Suggestions
+                    let dynamicMsg = "Analyzing household usage patterns...";
+                    if (NexGenState.currentUsage > 3.5) {
+                        dynamicMsg = "High power surge detected! AC usage is peak. Switch to 24°C.";
+                        showToast("High Usage", "Consider optimizing AC temperature.", "warning");
+                    } else if (new Date().getHours() > 8 && new Date().getHours() < 17) {
+                        dynamicMsg = "Natural daylight available. Consider switching off balcony lights.";
+                    } else if (NexGenState.currentUsage < 1.0) {
+                        dynamicMsg = "Excellent! You are in Eco-Zone. Vampire loads are minimized.";
+                    } else {
+                        const tasks = [
+                            "Optimizing AC schedule for off-peak hours...",
+                            "Scanning for vampire power leaks...",
+                            "Predicting next month's energy velocity...",
+                            "Calculating carbon offset from solar grid..."
+                        ];
+                        dynamicMsg = tasks[Math.floor(Math.random() * tasks.length)];
+                    }
+
                     if (msg) {
                         msg.classList.add('animate__fadeOut');
                         setTimeout(() => {
-                            msg.innerText = tasks[i];
+                            msg.innerText = dynamicMsg;
                             msg.classList.remove('animate__fadeOut');
                             msg.classList.add('animate__fadeIn');
-                            i = (i + 1) % tasks.length;
                         }, 500);
-                    }
-                    
-                    // High Usage Alert Logic
-                    if (NexGenState.currentUsage > 3.5) {
-                        showToast("High Usage Alert", "AC power surge detected. Consider eco-mode.", "warning");
                     }
                 }
             }, 50);
         }
-    }, 8000);
+    }, 10000);
 }
 
 // --- Smooth Counters ---
@@ -328,39 +381,6 @@ function initTheme() {
             showToast("System Update", `${isLight ? 'Light' : 'Dark'} mode activated.`, "info");
         };
     }
-}
-
-// --- Device Controls ---
-function initDeviceControls() {
-    const btns = document.querySelectorAll('.toggle-btn');
-    btns.forEach(btn => {
-        btn.onclick = () => {
-            const card = btn.closest('.device-card');
-            const statusText = card.querySelector('.dc-status span');
-            const dot = card.querySelector('.dot');
-            const isTurningOff = btn.innerText.includes("Off");
-            
-            btn.disabled = true;
-            btn.innerText = isTurningOff ? "Powering Off..." : "Powering On...";
-            
-            setTimeout(() => {
-                btn.disabled = false;
-                if (isTurningOff) {
-                    btn.innerText = "Turn On";
-                    statusText.innerText = "Idle";
-                    dot.classList.add('gray');
-                    card.style.opacity = '0.7';
-                    showToast("Device Update", "System switched to idle mode.", "info");
-                } else {
-                    btn.innerText = "Turn Off";
-                    statusText.innerText = "Active";
-                    dot.classList.remove('gray');
-                    card.style.opacity = '1';
-                    showToast("Device Update", "System is now active.", "success");
-                }
-            }, 800);
-        };
-    });
 }
 
 // --- Manual Entry ---
