@@ -18,39 +18,44 @@ const appState = {
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', async () => {
+    // Show UI immediately to prevent black screen
+    document.body.classList.add('ready');
+    
     try {
         initCharts();
         initChatbot(appState);
         initSettings();
         
-        await fetchData();
-        
-        appState.isInitialized = true;
-        document.body.classList.add('ready');
-        
         // --- GSAP Entrance ---
-        gsap.from(".animate-float", {
-            duration: 1.2,
-            y: 30,
-            opacity: 0,
-            stagger: 0.2,
-            ease: "power4.out"
-        });
+        if (window.gsap) {
+            gsap.from(".animate-float", {
+                duration: 1.2,
+                y: 30,
+                opacity: 0,
+                stagger: 0.1,
+                ease: "power4.out"
+            });
 
-        // Floating loop for metric cards
-        gsap.to(".animate-float", {
-            y: -10,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
+            // Floating loop
+            gsap.to(".animate-float", {
+                y: -10,
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
 
+        await fetchData();
+        appState.isInitialized = true;
+        
         setInterval(updateClock, 1000);
-        setInterval(fetchData, 3000); // Poll every 3s as per Figma design note
+        setInterval(fetchData, 4000);
         
     } catch (err) {
-        console.error("Master Sync Failure:", err);
+        console.error("Initialization Error:", err);
+        // Ensure UI is still visible even on error
+        document.body.classList.add('ready');
     }
 });
 
@@ -64,11 +69,13 @@ async function fetchData() {
         const dashData = await dashRes.json();
         const anaData = await anaRes.json();
         
-        appState.devices = dashData.devices;
-        appState.metrics = dashData.metrics;
+        appState.devices = dashData.devices || [];
+        appState.metrics = dashData.metrics || appState.metrics;
         
         renderUI(anaData);
-    } catch (err) {}
+    } catch (err) {
+        console.warn("Data Fetching Interrupted:", err);
+    }
 }
 
 function renderUI(anaData) {
@@ -96,30 +103,30 @@ async function handleDeviceToggle(id, isON) {
             body: JSON.stringify({ deviceId: id, status })
         });
         fetchData();
-        showToast(`${appState.devices[deviceIndex].name} Grid Updated`, 'success');
+        showToast(`${appState.devices[deviceIndex]?.name || 'Node'} Updated`, 'success');
     } catch (e) {
         fetchData();
     }
 }
 
-// --- UTILS & NAVIGATION ---
+// --- NAVIGATION ---
 window.showView = (viewId) => {
     document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
-    document.getElementById(`${viewId}-view`).style.display = 'block';
+    const target = document.getElementById(`${viewId}-view`);
+    if (target) target.style.display = 'block';
     
     document.querySelectorAll('.tab-btn').forEach(b => {
         b.classList.remove('active');
         if (b.innerText.toLowerCase() === viewId) b.classList.add('active');
     });
 
-    // GSAP Transition
-    gsap.from(`#${viewId}-view`, { duration: 0.5, opacity: 0, x: 20 });
+    gsap.from(`#${viewId}-view`, { duration: 0.4, opacity: 0, y: 10 });
 };
 
 function renderSuggestions(tips) {
     const container = document.getElementById('suggestions-list');
     if (!container) return;
-    container.innerHTML = tips.map(t => `<div class="suggestion-card" style="font-size:12px; padding:10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">${t}</div>`).join('');
+    container.innerHTML = tips.map(t => `<div class="suggestion-card" style="font-size:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); margin-bottom:8px;">${t}</div>`).join('');
 }
 
 function updateClock() {
