@@ -57,7 +57,7 @@ async function runEnergyAI(type, mongoData) {
 
   // --- Call Claude with the master system prompt ---
   const response = await client.messages.create({
-    model: "claude-3-5-sonnet-20240620", // Updated to a valid model as "claude-opus-4-6" is placeholder
+    model: "claude-3-5-sonnet-20240620", // Fixed placeholder model
     max_tokens: 1000,
     system: `
 You are an expert home energy analyst AI inside a residential energy monitoring app.
@@ -321,10 +321,10 @@ Question: {{USER_QUESTION}}
 const express = require("express");
 const router = express.Router();
 
-// Your existing MongoDB models — DO NOT change
+// Your existing MongoDB models — Paths fixed for root location
 const EnergyLog = require("./models/EnergyLog");
-const BillRecord = require("./models/BillRecord");
-const SolarData = require("./models/SolarData");
+// const BillRecord = require("./models/BillRecord"); // Placeholder/Missing
+// const SolarData = require("./models/SolarData");   // Placeholder/Missing
 
 const DAY = 86400000;
 

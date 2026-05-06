@@ -66,13 +66,15 @@ const appendMsg = (text, type) => {
 
 const showTyping = () => {
     const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
     const typing = document.createElement('div');
     typing.id = 'typing-indicator';
     typing.className = 'message ai message-typing';
-    typing.innerText = 'Nexus is analyzing telemetry...';
+    typing.innerHTML = 'Nexus is analyzing <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
     chatBox.appendChild(typing);
     chatBox.scrollTop = chatBox.scrollHeight;
 };
+
 
 const removeTyping = () => {
     document.getElementById('typing-indicator')?.remove();
