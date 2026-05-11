@@ -28,6 +28,8 @@
                     <button class="tab-btn" onclick="showView('devices')">Devices</button>
                     <button class="tab-btn" onclick="showView('grid')">Grid</button>
                     <button class="tab-btn" onclick="showView('challenges')">Challenges</button>
+                    <button class="tab-btn" onclick="showView('settings')">Settings</button>
+
                 </nav>
             </div>
             <div class="header-status" style="display: flex; align-items: center; gap: 20px;">
@@ -213,6 +215,51 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Settings View -->
+            <div id="settings-view" class="view-content">
+                <div class="source-config">
+                    <h3><i class="fas fa-sliders"></i> System Preferences</h3>
+                    <p style="opacity: 0.7; margin-top: 5px;">Configure your neural grid experience.</p>
+                </div>
+                <div class="metrics-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                    <div class="metric-card">
+                        <h4>Appearance</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                            <span>Dark Mode</span>
+                            <label class="switch">
+                                <input type="checkbox" id="dark-mode-toggle" checked onchange="window.updateAppSetting('darkMode', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                            <span>Animations</span>
+                            <label class="switch">
+                                <input type="checkbox" checked onchange="window.updateAppSetting('animations', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Notifications</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                            <span>Grid Alerts</span>
+                            <label class="switch">
+                                <input type="checkbox" checked onchange="window.updateAppSetting('notifications', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="metric-card" style="border-top: 4px solid var(--accent-red);">
+                        <h4>System Maintenance</h4>
+                        <p style="font-size: 12px; margin-top: 10px; opacity: 0.7;">Clear local cache and reload system.</p>
+                        <button onclick="window.resetLocalData()" class="tab-btn" style="width: 100%; margin-top: 20px; background: rgba(239, 68, 68, 0.1); color: var(--accent-red); border-color: rgba(239, 68, 68, 0.2);">
+                            Reset Local Cache
+                        </button>
+                    </div>
+                </div>
+            </div>
+
 
         </main>
     </div>

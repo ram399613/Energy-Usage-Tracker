@@ -86,6 +86,15 @@ const initApp = async () => {
               .from(".ai-fab", { duration: 0.5, scale: 0, opacity: 0, ease: "back.out(2)" }, "-=0.2");
         }
         
+        // --- Settings Bridge ---
+        window.updateAppSetting = (key, val) => {
+            import('./settings.js').then(m => m.updateSetting(key, val));
+            showToast(`${key} updated`, 'success');
+        };
+        window.resetLocalData = () => {
+            import('./settings.js').then(m => m.resetSystem());
+        };
+        
         setInterval(updateClock, 1000);
         setInterval(fetchData, 5000);
         console.log("AI System: Neural Grid fully synchronized.");
