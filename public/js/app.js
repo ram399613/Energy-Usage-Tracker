@@ -116,6 +116,9 @@ const initApp = async () => {
                         msgDiv.innerText = msg;
                         chatBox.appendChild(msgDiv);
                         
+                        aiPanel.classList.add('saying-hi');
+                        setTimeout(() => aiPanel.classList.remove('saying-hi'), 5000);
+                        
                         aiPanel.classList.add('speaking');
                         setTimeout(() => aiPanel.classList.remove('speaking'), 4000);
                     }
