@@ -129,9 +129,10 @@ const initApp = async () => {
                         aiPanel.classList.add('saying-hi');
                         setTimeout(() => aiPanel.classList.remove('saying-hi'), 5000);
                         
-                        aiPanel.classList.add('speaking');
-                        setTimeout(() => aiPanel.classList.remove('speaking'), 4000);
+                        document.body.classList.add('ai-is-speaking');
+                        setTimeout(() => document.body.classList.remove('ai-is-speaking'), 4000);
                     }
+
                 });
             }
         }, 2000);

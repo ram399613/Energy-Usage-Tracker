@@ -47,11 +47,8 @@ const handleChat = async (query, state) => {
         const data = await res.json();
         
         removeTyping();
-        const aiPanel = document.getElementById('ai-panel');
-        if (aiPanel) {
-            aiPanel.classList.add('speaking');
-            setTimeout(() => aiPanel.classList.remove('speaking'), 3000);
-        }
+        document.body.classList.add('ai-is-speaking');
+        setTimeout(() => document.body.classList.remove('ai-is-speaking'), 3000);
         appendMsg(data.response, 'ai');
     } catch (e) {
         removeTyping();

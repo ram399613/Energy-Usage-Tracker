@@ -88,14 +88,19 @@ body::after {
 
 /* AI Mascot Styles */
 .ai-mascot-container {
-    position: absolute;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 160px;
-    height: 160px;
-    z-index: 10;
-    pointer-events: none;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 140px;
+    height: 140px;
+    z-index: 2000;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ai-mascot-container:hover {
+    transform: scale(1.1) rotate(5deg);
 }
 
 #ai-mascot {
@@ -130,7 +135,8 @@ body::after {
     transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-#ai-panel.saying-hi .hi-label {
+#ai-panel.saying-hi .hi-label,
+body.ai-is-saying-hi .hi-label {
     opacity: 1;
     transform: scale(1);
 }
@@ -159,7 +165,7 @@ body::after {
     100% { transform: translateX(-50%) scale(2.5); opacity: 0; }
 }
 
-#ai-panel.speaking .speaking-pulse {
+body.ai-is-speaking .speaking-pulse {
     display: block;
 }
 
