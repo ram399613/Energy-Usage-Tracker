@@ -99,6 +99,30 @@ const initApp = async () => {
         setInterval(fetchData, 5000);
         console.log("AI System: Neural Grid fully synchronized.");
         
+        // --- Neural Greeting ---
+        setTimeout(() => {
+            const aiPanel = document.getElementById('ai-panel');
+            const toggleBtn = document.getElementById('ai-toggle-btn');
+            if (aiPanel && toggleBtn) {
+                aiPanel.classList.remove('hidden');
+                toggleBtn.style.display = 'none';
+                import('./chatbot.js').then(m => {
+                    // Simulating a greeting without a backend call for speed
+                    const msg = "Neural Grid Link Established. Welcome, Administrator. I am Nexus, your energy optimization mascot. How can I assist you today?";
+                    const chatBox = document.getElementById('chat-messages');
+                    if (chatBox && chatBox.children.length === 0) {
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = 'message ai';
+                        msgDiv.innerText = msg;
+                        chatBox.appendChild(msgDiv);
+                        
+                        aiPanel.classList.add('speaking');
+                        setTimeout(() => aiPanel.classList.remove('speaking'), 4000);
+                    }
+                });
+            }
+        }, 2000);
+        
     } catch (err) {
         console.error("Initialization Sync Error:", err);
     }

@@ -24,7 +24,7 @@ export const updateSetting = (key, value) => {
 
 const applySettings = () => {
     document.body.classList.toggle('light-mode', !settings.darkMode);
-    // Add logic for animation control if needed
+    document.body.classList.toggle('no-animations', !settings.animations);
 };
 
 export const resetSystem = () => {
