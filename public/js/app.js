@@ -8,6 +8,8 @@ import { analyzeSystem } from './ai-engine.js';
 import { initChatbot } from './chatbot.js';
 import { showToast } from './utils.js';
 import { initSettings } from './settings.js';
+import { updateGridTelemetry, updateChallenges } from './grid-challenges.js';
+
 
 const socket = typeof io !== 'undefined' ? io() : { on: () => {} };
 
@@ -41,6 +43,25 @@ window.showView = (viewId) => {
         b.classList.remove('active');
         if (b.innerText.toLowerCase() === viewId) b.classList.add('active');
     });
+
+    // Refresh UI immediately on view switch
+    if (appState.isInitialized) {
+        updateGridTelemetry(appState);
+        updateChallenges(appState);
+    }
+};
+
+// --- SYSTEM RESET ---
+window.fullReset = async () => {
+    if (confirm("Reset all energy data and turn off all devices?")) {
+        try {
+            await fetch('/api/reset-data', { method: 'POST' });
+            showToast("Neural grid reset completed", "success");
+            setTimeout(() => location.reload(), 1000);
+        } catch (e) {
+            showToast("Reset failed", "error");
+        }
+    }
 };
 
 // --- INITIALIZATION ---
@@ -106,7 +127,12 @@ function renderUI(anaData) {
     
     const suggestions = analyzeSystem(appState);
     renderSuggestions(suggestions);
+    
+    // Update Grid & Challenges
+    updateGridTelemetry(appState);
+    updateChallenges(appState);
 }
+
 
 // --- DEVICE TOGGLE ---
 async function handleDeviceToggle(id, isON) {

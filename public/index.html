@@ -13,6 +13,8 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body id="master-body">
+    <canvas id="bg-animation"></canvas>
+
     
     <div class="app-container">
         <!-- Header Section -->
@@ -28,9 +30,13 @@
                     <button class="tab-btn" onclick="showView('challenges')">Challenges</button>
                 </nav>
             </div>
-            <div class="header-status">
+            <div class="header-status" style="display: flex; align-items: center; gap: 20px;">
+                <button onclick="window.fullReset()" class="tab-btn" style="padding: 8px 15px; font-size: 12px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: var(--accent-red);">
+                    <i class="fas fa-rotate"></i> Reset Simulation
+                </button>
                 <div id="live-clock" style="font-size: 14px; font-weight: 500; opacity: 0.8;">--:--:--</div>
             </div>
+
         </header>
 
         <!-- Main Viewport -->
@@ -48,12 +54,13 @@
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <p>Current Usage</p>
+                            <p>Real-time Load</p>
                             <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--accent-blue);">
                                 <i class="fas fa-bolt"></i>
                             </div>
                         </div>
-                        <h3 id="total-consumed">0.00 kW</h3>
+                        <h3 id="current-load">0.00 kW</h3>
+
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                             <p class="text-blue" style="font-size: 12px;"><span class="pulse-dot"></span> Grid Sync</p>
                             <p style="font-size: 11px; opacity: 0.6;">CO₂: <span id="ana-carbon">0.00 kg</span></p>
@@ -69,7 +76,8 @@
                         <h3 id="eco-score">75.6%</h3>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                             <p class="text-green" style="font-size: 12px;">☀️ Optimal</p>
-                            <p style="font-size: 11px; opacity: 0.6;">Daily: <span id="ana-daily">0.0 kW</span></p>
+                            <p style="font-size: 11px; opacity: 0.6;">Total: <span id="total-energy">0.00 kWh</span></p>
+
                         </div>
                     </div>
                     <div class="metric-card">
@@ -241,6 +249,8 @@
     </div>
 
     <div id="toast-container"></div>
+    <script type="module" src="js/grid-challenges.js"></script>
     <script type="module" src="js/app.js"></script>
+
 </body>
 </html>

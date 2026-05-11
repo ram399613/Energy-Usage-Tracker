@@ -33,17 +33,44 @@ app.use('/api/ai', require('./masterPrompt'));
 io.on('connection', (socket) => {
   console.log('AI System: Client connected to neural grid');
   
-  const interval = setInterval(async () => {
-    socket.emit('live-update', {
-      timestamp: new Date(),
-      usage: (Math.random() * 5).toFixed(2)
-    });
-  }, 5000);
-
   socket.on('disconnect', () => {
-    clearInterval(interval);
+    console.log('AI System: Client disconnected');
   });
 });
+
+// --- REAL-TIME ENERGY SIMULATION ENGINE ---
+// This background worker simulates power consumption by active devices every 10 seconds
+const Device = require('./models/Device');
+const Energy = require('./models/Energy');
+
+setInterval(async () => {
+    try {
+        const activeDevices = await Device.find({ status: { $in: ['Active', 'ON'] } });
+        if (activeDevices.length > 0) {
+            for (const device of activeDevices) {
+                // Consume 1/360th of the hourly usage (since 10s = 1/360 of an hour)
+                const unitsConsumed = (device.watts / 1000) / 360;
+                
+                await Energy.create({
+                    deviceName: device.name,
+                    units: unitsConsumed,
+                    cost: unitsConsumed * 7.5, // Avg slab rate
+                    hoursUsed: 1/360,
+                    category: device.category
+                });
+            }
+            
+            // Broadcast live update via socket
+            const totalLoad = activeDevices.reduce((sum, d) => sum + (d.watts / 1000), 0).toFixed(2);
+            io.emit('live-update', {
+                timestamp: new Date(),
+                usage: totalLoad
+            });
+        }
+    } catch (err) {
+        console.error("Simulation Engine Error:", err);
+    }
+}, 10000); // Update every 10 seconds
 
 app.set('io', io);
 

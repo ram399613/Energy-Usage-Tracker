@@ -15,13 +15,23 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
 body {
-  background: 
-    radial-gradient(circle at top right, rgba(30, 27, 75, 0.4), rgba(3, 7, 18, 0.95)),
-    url('../images/ai-bg.png') no-repeat center center fixed;
-  background-size: cover;
+  background: var(--bg-deep);
   color: var(--text-main);
   overflow-x: hidden;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+#bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 
@@ -338,12 +348,38 @@ body {
     filter: drop-shadow(0 0 10px currentColor);
 }
 .flow-arrow {
-    animation: flow-slide 2s infinite linear;
+    font-size: 24px;
+    color: var(--accent-cyan);
+    opacity: 0.3;
+    animation: energy-pulse 1.5s infinite ease-in-out;
 }
-@keyframes flow-slide {
-    0% { opacity: 0.2; transform: translateX(-5px); }
-    50% { opacity: 0.8; transform: translateX(5px); }
-    100% { opacity: 0.2; transform: translateX(-5px); }
+
+@keyframes energy-pulse {
+    0% { transform: translateX(-10px); opacity: 0.1; filter: blur(2px); }
+    50% { transform: translateX(0); opacity: 1; filter: blur(0); text-shadow: 0 0 15px var(--accent-cyan); }
+    100% { transform: translateX(10px); opacity: 0.1; filter: blur(2px); }
+}
+
+.progress-fill {
+    transition: width 1s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 .badge {

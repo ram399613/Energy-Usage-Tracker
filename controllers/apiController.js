@@ -153,3 +153,13 @@ exports.addManualEnergy = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+exports.resetData = async (req, res) => {
+  try {
+    await Energy.deleteMany({});
+    // Reset all devices to Idle
+    await Device.updateMany({}, { status: 'Idle', usage: 0 });
+    res.json({ message: "Neural grid reset successfully." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

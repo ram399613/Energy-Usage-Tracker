@@ -13,5 +13,7 @@ router.get('/analytics', apiController.getAnalytics);
 router.get('/bill', apiController.getBill);
 router.get('/ai-insights', apiController.getAIInsights);
 router.post('/chat', apiController.postChat);
+router.post('/reset-data', apiController.resetData);
+
 
 module.exports = router;
