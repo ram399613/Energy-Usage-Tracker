@@ -35,7 +35,17 @@ window.showView = (viewId) => {
         target.classList.add('active');
         target.style.display = 'block';
         if (window.gsap) {
-            gsap.fromTo(target, { opacity: 0, y: 10 }, { duration: 0.3, opacity: 1, y: 0, ease: "power2.out" });
+            // Animate the view container
+            gsap.fromTo(target, { opacity: 0, y: 15 }, { duration: 0.4, opacity: 1, y: 0, ease: "power2.out" });
+            
+            // Stagger animate all cards within the view
+            const cards = target.querySelectorAll('.metric-card, .chart-card, .device-card, .flow-node');
+            if (cards.length > 0) {
+                gsap.fromTo(cards, 
+                    { opacity: 0, y: 20, scale: 0.95 }, 
+                    { duration: 0.5, opacity: 1, y: 0, scale: 1, stagger: 0.05, ease: "back.out(1.2)", delay: 0.1 }
+                );
+            }
         }
     }
     
