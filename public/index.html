@@ -271,18 +271,24 @@
 
     <!-- AI Intelligence Overlay -->
     <div class="ai-overlay hidden" id="ai-panel">
+        <div class="ai-mascot-container">
+            <img src="images/cute-robot.png" id="ai-mascot" alt="AI Mascot">
+            <div class="speaking-pulse"></div>
+        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="width: 40px; height: 40px; background: var(--accent-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-brain"></i>
                 </div>
                 <div>
-                    <h4 style="font-weight: 700;">Nexus Intelligence</h4>
+                    <h4 style="font-weight: 700;">Nexus Assistant</h4>
                     <p style="font-size: 10px; color: var(--accent-cyan); display: flex; align-items: center; gap: 5px;">
-                        <span style="display: inline-block; width: 6px; height: 6px; background: var(--accent-cyan); border-radius: 50%; box-shadow: 0 0 10px var(--accent-cyan); animation: pulse 2s infinite;"></span>
-                        ANALYSIS LIVE
+                        <span id="ai-status-dot" style="display: inline-block; width: 6px; height: 6px; background: var(--accent-cyan); border-radius: 50%; box-shadow: 0 0 10px var(--accent-cyan);"></span>
+                        SYSTEM ACTIVE
                     </p>
                 </div>
+
             </div>
             <button id="close-ai" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px;"><i class="fas fa-times"></i></button>
         </div>
