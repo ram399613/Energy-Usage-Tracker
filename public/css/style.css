@@ -44,9 +44,9 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('../images/robot-bg.png') no-repeat center center fixed;
-  background-size: cover;
-  opacity: 0.25;
+  background: url('../images/waving-robot.png') no-repeat center center fixed;
+  background-size: contain;
+  opacity: 0.35;
   z-index: -2;
   animation: float-bg 12s infinite ease-in-out;
 }
@@ -86,88 +86,9 @@ body::after {
   opacity: 0.3;
 }
 
-/* AI Mascot Styles */
-.ai-mascot-container {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 140px;
-    height: 140px;
-    z-index: 2000;
-    pointer-events: auto;
-    cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
 
-.ai-mascot-container:hover {
-    transform: scale(1.1) rotate(5deg);
-}
 
-#ai-mascot {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 20px var(--accent-blue));
-    animation: mascot-wave 3s infinite ease-in-out;
-}
 
-@keyframes mascot-wave {
-    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
-    25% { transform: translateY(-10px) rotate(5deg) scale(1.05); }
-    50% { transform: translateY(-5px) rotate(-5deg) scale(1.1); }
-    75% { transform: translateY(-12px) rotate(3deg) scale(1.05); }
-}
-
-.hi-label {
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    background: var(--accent-cyan);
-    color: #000;
-    font-size: 10px;
-    font-weight: 900;
-    padding: 4px 10px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px var(--accent-cyan);
-    animation: hi-float 2s infinite alternate ease-in-out;
-    opacity: 0;
-    transform: scale(0);
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-#ai-panel.saying-hi .hi-label,
-body.ai-is-saying-hi .hi-label {
-    opacity: 1;
-    transform: scale(1);
-}
-
-@keyframes hi-float {
-    from { transform: translateY(0) rotate(10deg); opacity: 0.8; }
-    to { transform: translateY(-10px) rotate(15deg); opacity: 1; }
-}
-
-.speaking-pulse {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(6, 182, 212, 0.2);
-    border-radius: 50%;
-    z-index: -1;
-    animation: speak-pulse 1.5s infinite;
-    display: none; /* Only show when speaking */
-}
-
-@keyframes speak-pulse {
-    0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
-    100% { transform: translateX(-50%) scale(2.5); opacity: 0; }
-}
-
-body.ai-is-speaking .speaking-pulse {
-    display: block;
-}
 
 
 .app-container {

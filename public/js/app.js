@@ -117,22 +117,14 @@ const initApp = async () => {
                 aiPanel.classList.remove('hidden');
                 toggleBtn.style.display = 'none';
                 import('./chatbot.js').then(m => {
-                    // Simulating a greeting without a backend call for speed
-                    const msg = "Neural Grid Link Established. Welcome, Administrator. I am Nexus, your energy optimization mascot. How can I assist you today?";
+                    const msg = "Neural Grid Link Established. Welcome, Administrator. I am your energy optimization assistant. How can I assist you today?";
                     const chatBox = document.getElementById('chat-messages');
                     if (chatBox && chatBox.children.length === 0) {
                         const msgDiv = document.createElement('div');
                         msgDiv.className = 'message ai';
                         msgDiv.innerText = msg;
                         chatBox.appendChild(msgDiv);
-                        
-                        aiPanel.classList.add('saying-hi');
-                        setTimeout(() => aiPanel.classList.remove('saying-hi'), 5000);
-                        
-                        document.body.classList.add('ai-is-speaking');
-                        setTimeout(() => document.body.classList.remove('ai-is-speaking'), 4000);
                     }
-
                 });
             }
         }, 2000);
