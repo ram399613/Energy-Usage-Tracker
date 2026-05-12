@@ -1,6 +1,6 @@
 :root {
   --bg-deep: #030712;
-  --bg-card: rgba(17, 24, 39, 0.7);
+  --bg-card: rgba(15, 23, 42, 0.85); /* Darker for better contrast */
   --accent-blue: #3b82f6;
   --accent-green: #10b981;
   --accent-red: #ef4444;
@@ -52,7 +52,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(rgba(3, 7, 18, 0.7), rgba(3, 7, 18, 0.85)), 
+  background: linear-gradient(rgba(3, 7, 18, 0.8), rgba(3, 7, 18, 0.9)), 
               url('../images/waving-robot.png') no-repeat center center fixed;
   background-size: cover;
   background-position: center;
@@ -103,17 +103,21 @@ body::after {
 
 
 .app-container {
-  max-width: 1400px;
+  max-width: 100%;
+  width: 1400px;
   margin: 0 auto;
   padding: 40px 20px;
+  box-sizing: border-box;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; /* Better alignment */
   margin-bottom: 50px;
   position: relative;
+  flex-wrap: wrap; /* Responsive wrap */
+  gap: 20px;
 }
 
 .title-group h1 {
@@ -139,6 +143,7 @@ body::after {
   display: flex;
   gap: 12px;
   margin-top: 30px;
+  flex-wrap: wrap; /* Allow tabs to wrap on small screens */
 }
 
 .tab-btn {
@@ -333,20 +338,23 @@ body::after {
 @media (max-width: 1024px) {
   .app-container { padding: 20px; }
   .metrics-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .header { justify-content: center; text-align: center; }
 }
 
 @media (max-width: 768px) {
-  .header { flex-direction: column; gap: 20px; }
-  .tabs-nav { width: 100%; overflow-x: auto; padding-bottom: 10px; }
+  .header { flex-direction: column; gap: 20px; align-items: center; }
+  .tabs-nav { width: 100%; justify-content: center; }
   .charts-container { grid-template-columns: 1fr; }
-  .ai-overlay { width: calc(100% - 40px); left: 20px; bottom: 20px; max-height: 80vh; }
-  .title-group h1 { font-size: 28px; }
+  .ai-overlay { width: calc(100% - 40px); left: 20px; bottom: 20px; max-height: 70vh; }
+  .title-group h1 { font-size: 28px; justify-content: center; }
+  .title-group p { margin: 10px auto; }
 }
 
 @media (max-width: 480px) {
   .metric-card { padding: 25px 20px; }
   .app-container { padding: 15px; }
-  .header-status { width: 100%; justify-content: space-between; }
+  .header-status { width: 100%; justify-content: center; flex-wrap: wrap; }
+  .tab-btn { width: 100%; text-align: center; }
 }
 
 .text-red { color: var(--accent-red); }
