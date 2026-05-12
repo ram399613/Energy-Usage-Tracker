@@ -12,6 +12,14 @@
   --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
+html, body { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Inter', sans-serif; 
+  overflow-x: hidden;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
 body {
@@ -21,7 +29,7 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  animation: screen-flicker 0.15s infinite;
+  position: relative;
 }
 
 body.no-animations, 
@@ -44,18 +52,21 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('../images/waving-robot.png') no-repeat center center fixed;
-  background-size: contain;
-  opacity: 0.35;
+  background: linear-gradient(rgba(3, 7, 18, 0.7), rgba(3, 7, 18, 0.85)), 
+              url('../images/waving-robot.png') no-repeat center center fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: -2;
-  animation: float-bg 12s infinite ease-in-out;
+  transform: scale(1.05);
+  animation: floatBackground 20s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-
-@keyframes float-bg {
-  0%, 100% { transform: scale(1.05) translate(0, 0) rotate(0deg); }
-  33% { transform: scale(1.1) translate(-30px, 15px) rotate(1deg); }
-  66% { transform: scale(1.08) translate(20px, -10px) rotate(-1deg); }
+@keyframes floatBackground {
+  0% { transform: scale(1.05) translate(0, 0); }
+  50% { transform: scale(1.1) translate(-20px, 20px); }
+  100% { transform: scale(1.05) translate(20px, -20px); }
 }
 
 
@@ -150,7 +161,8 @@ body::after {
 
 .source-config {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-  backdrop-filter: blur(25px) saturate(180%);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 28px;
   padding: 35px;
@@ -196,7 +208,8 @@ body::after {
 
 .metric-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
   border: 1px solid var(--glass-border);
   border-radius: 28px;
   padding: 35px;
@@ -317,11 +330,23 @@ body::after {
 }
 
 /* Mobile Adjustments */
+@media (max-width: 1024px) {
+  .app-container { padding: 20px; }
+  .metrics-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+}
+
 @media (max-width: 768px) {
-  .header { flex-direction: column; }
+  .header { flex-direction: column; gap: 20px; }
   .tabs-nav { width: 100%; overflow-x: auto; padding-bottom: 10px; }
   .charts-container { grid-template-columns: 1fr; }
-  .ai-overlay { width: calc(100% - 40px); left: 20px; bottom: 20px; }
+  .ai-overlay { width: calc(100% - 40px); left: 20px; bottom: 20px; max-height: 80vh; }
+  .title-group h1 { font-size: 28px; }
+}
+
+@media (max-width: 480px) {
+  .metric-card { padding: 25px 20px; }
+  .app-container { padding: 15px; }
+  .header-status { width: 100%; justify-content: space-between; }
 }
 
 .text-red { color: var(--accent-red); }

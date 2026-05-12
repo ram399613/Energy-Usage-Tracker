@@ -27,7 +27,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
 app.use('/api', require('./routes/api'));
-app.use('/api/ai', require('./masterPrompt'));
 
 // Socket.io
 io.on('connection', (socket) => {
